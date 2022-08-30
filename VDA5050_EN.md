@@ -1,35 +1,45 @@
 ![logo](./assets/logo.png)
-# Interface for the communication between automated guided vehicles (AGV) and a RCS 
+# 自动引导车辆(AGV)与RCS之间通信接口
 
 ## VDA 5050
 
-## Version 2.0.0
+## 版本 2.0.0
 
-![control system and automated guided vehicles](./assets/csagv.png) 
+**定义转换(翻译增加非原版)** 
+1. the  control system -> RCS 机器人控制系统
+
+2. automated guided vehicles -> AGV
+
+3. node -> point 点
+
+4. edge -> segment 片段(直线 弧线)
 
 
 
-### Brief information
-
-Definition of a communication interface for driverless transport systems (DTS).
-This recommendation describes the communication interface for exchanging task and status data between a central RCS and automated guided vehicles (AGV) for intralogistics processes.  
+![RCS和自动导向车辆](./assets/csagv.png) 
 
 
 
-### Disclaimer 
+### 简短信息
 
-The following explanations serve as an indication for the execution of an interface for communication between automated guided vehicles (AGV) and RCS and one that is freely applicable to everyone and is non-binding.
-Those who apply them must ensure that they are applied properly in the specific case.
+无人驾驶运输系统的通信接口的定义 (DTS).
+该建议描述了RCS和AGV之间交换任务和状态数据的内部通信接口.  
 
-They shall take into account the state of the art prevailing at the time of each issue.
-By applying the proposals, no one is evasive of responsibility for their own actions. 
-The statements do not claim to be exhaustive or to the exact interpretation of the existing legislation.
-They may not replace the study of relevant policies, laws and regulations. 
-Furthermore, the special features of the respective products as well as their different possible applications must be taken into account.
-Everyone acts at his own risk in this regard.
-Liability of the VDA and those involved in the development or application of the proposals is excluded.
 
-If you encounter any inaccuracies in the application of the proposals or the possibility of an incorrect interpretation, please inform the VDA immediately so that any defects can be rectified.
+
+### 免责声明 
+
+以下内容说明了自动引导车辆(AGV)和RCS之间通信接口,该接口可自由使用,适用于所有人且不具有约束力.
+
+应用这些规则的人必须确保在特定情况下适当使用.
+他们应考虑到每个问题时盛行的最新技术.
+通过实施这些建议,任何人都不逃避自己行动的责任.
+这些陈述并不声称是详尽无遗的,也不是对现有立法的确切解释.
+它们不能取代对相关政策、法律和法规的研究.
+此外,必须考虑到各产品的特殊特性及其不同的可能应用.
+在这方面,每个人都有自己的风险.
+应该把VDA以及参与提案的开发或应用的责任 排除在外.
+如果您在应用时遇到任何不准确之处或可能出现不正确的解释,请立即通知VDA,以便纠正任何缺陷
 
 **Publisher**
 Verband der Automobilindustrie e.v. (VDA)
@@ -44,118 +54,114 @@ Version 2.0
 
 
 
-## Table of contents
+## 目录
 
-[1 Foreword](#Foreword)<br>
-[2 Objective of the document](#Ootd)<br>
-[3 Scope](#Scope)<br>
-[3.1 Other applicable documents](#Oad)<br>
-[4 Requirements and protocol definition](#Rapd)<br>
-[5 Process and content of communication](#Pacoc)<br>
-[6 Protocol specification](#Ps)<br>
+[1 前言](#Foreword)<br>
+[2 文档的目的](#Ootd)<br>
+[3 范围](#Scope)<br>
+[3.1 其他适用的文件](#Oad)<br>
+[4 需求和协议定义](#Rapd)<br>
+[5 通信的过程和内容](#Pacoc)<br>
+[6 协议规范](#Ps)<br>
 [6.1 Symbols of the tables and meaning of formatting](#Sottamof)<br>
-[6.1.1 可选 fields](#Of)<br>
-[6.1.2 Permitted characters and field lengths](#Pcafl)<br>
-[6.1.3 Notation of enumerations](#Noe) <br>
-[6.1.4 JSON Datatypes](#JD)<br>
-[6.2 MQTT connection handling, security and QoS](#MchsaQ)<br>
-[6.3 MQTT-Topic Levels](#MTL)<br>
-[6.4 Protocol Header](#PH)<br>
-[6.5 Subtopics for communication](#Sfc)<br>
-[6.6 Topic: "task" (from RCS to AGV)](#TOfmctA)<br>
-[6.6.1 Concept and Logic](#CaL)<br>
-[6.6.2 tasks and task updates](#Oaou)<br>
-[6.6.3 task Cancellation (by RCS)](#OCbMC)<br>
-[6.6.3.1 Receiving a new task after cancellation](#Ranoac)<br>
-[6.6.3.2 Receiving a cancelOrder action when AGV has no task](#RacawAhno)<br>
-[6.6.4 task rejection](#Or)<br>
-[6.6.4.1 Vehicle gets a malformed new task](#Vgamno)<br>
-[6.6.4.2 Vehicle receives an task with actions it cannot perform (例如 lifting height higher than maximum lifting height, or lifting actions although no stroke is installed), or with fields that it cannot use (例如 Trajectory)](#Vraowaicpeglhhtmlholaansii)<br>
-[6.6.4.3 Vehicle gets a new task with the same orderId but a lower orderUpdateId than the current orderUpdateId](#Vehiclegets)<br>
+[6.1.1 可选 字段](#Of)<br>
+[6.1.2 允许的字符和字段长度](#Pcafl)<br>
+[6.1.3 枚举的符号](#Noe) <br>
+[6.1.4 JSON数据类型](#JD)<br>
+[6.2 MQTT连接处理,安全性和QoS](#MchsaQ)<br>
+[6.3 MQTT主题水平](#MTL)<br>
+[6.4 协议标头](#PH)<br>
+[6.5 通信Subtopics](#Sfc)<br>
+[6.6 主题: "task" (从 RCS 到 AGV)](#TOfmctA)<br>
+[6.6.1 概念和逻辑](#CaL)<br>
+[6.6.2 任务和任务更新](#Oaou)<br>
+[6.6.3 取消任务 (通过RCS)](#OCbMC)<br>
+[6.6.3.1 取消后收到新任务](#Ranoac)<br>
+[6.6.3.2 当AGV没有任务时,接收到取消订单](#RacawAhno)<br>
+[6.6.4 任务拒绝](#Or)<br>
+[6.6.4.1 车辆得到了格式不正确的新任务](#Vgamno)<br>
+[6.6.4.2 车辆收到一个行动无法执行的任务 (例如 提起高度高于最大提升高度或没有安装举升设备的举升动作), 或与无法使用的字段 (例如 Trajectory)](#Vraowaicpeglhhtmlholaansii)<br>
+[6.6.4.3 车辆获得了一项相同orderid的新任务,但orderUpdateId比当前的低](#Vehiclegets)<br>
 [6.6.5 Maps](#Maps)<br>
-[6.7 Implementation of the task message](#Iotom)<br>
+[6.7 任务消息的实施](#Iotom)<br>
 [6.8 actions](#actions)<br>
-[6.8.1 Predefined action definitions, their parameters, effects and scope](#Padtpeas)<br>
-[6.8.2 Predefined action definitions, their parameters, effects and scope](#Padtpeas1)<br>
-[6.9 Topic: "instantactions" (from RCS to AGV)](#Tifmc)<br>
-[6.10 Topic: "state" (from AGV to RCS)](#TSfAtmc)<br>
-[6.10.1 Concept and Logic](#CaLe)<br>
-[6.10.2 Traversal of points and entering/leaving segments, triggering of actions](#Tonaeletoa)<br>
-[6.10.3 Base request](#Br)<br>
-[6.10.4 Information](#Information)<br>
-[6.10.5 Errors](#Errors)<br>
-[6.10.6 Implementation](#Implementation)<br>
+[6.8.1 预定义的动作,其参数,效果和范围](#Padtpeas)<br>
+[6.8.2 预定义的动作,其参数,效果和范围](#Padtpeas1)<br>
+[6.9 主题: "instantactions" (从 RCS 到 AGV)](#Tifmc)<br>
+[6.10 主题: "state" (从 AGV 到 RCS)](#TSfAtmc)<br>
+[6.10.1 概念和逻辑](#CaLe)<br>
+[6.10.2 途径点和进入/离开细片段,动作触发](#Tonaeletoa)<br>
+[6.10.3 Base请求](#Br)<br>
+[6.10.4 信息Information](#Information)<br>
+[6.10.5 错误Errors](#Errors)<br>
+[6.10.6 执行Implementation](#Implementation)<br>
 [6.11 actionStates](#actionStates)<br>
-[6.12 action Blocking Types and sequence](#ABTas)<br>
-[6.13 Topic "visualization"](#TV)<br>
-[6.14 Topic "connection"](#Tc)<br>
-[6.15 Topic "factsheet"](#Tf)<br>
-[7 Best practice](#Bp)<br>
+[6.12 action阻塞类型和顺序](#ABTas)<br>
+[6.13 主题 "visualization"](#TV)<br>
+[6.14 主题 "connection"](#Tc)<br>
+[6.15 主题 "factsheet"](#Tf)<br>
+[7 最佳实践](#Bp)<br>
 [7.1 Error reference](#Er)<br>
-[7.2 Format of parameters](#Fop)<br>
-[8 Glossary](#Glossary)<br>
-[8.1 Definition](#Definition)<br>
+[7.2 参数格式](#Fop)<br>
+[8 词汇表](#Glossary)<br>
+[8.1 定义](#Definition)<br>
 
 
 
 # <a name="Foreword"></a> 1 Foreword 
 
 
-The interface was established in cooperation between the Verband der Automobilindustrie e. V. (German abbreviation VDA) and Verband Deutscher Maschinen-und Anlagenbau e. V. (German abbreviation VDMA). 
-The aim of both parties is to create an universally applicable interface. 
-Proposals for changes to the interface shall be submitted to the VDA, are evaluated jointly with the VDMA and adopted into a new version status in the event of a positive decision.
-The contribution to this document via GitHub is greatly appreciated.
-The Repository can be found at the following link: http://github.com/vda5050/vda5050.
+该接口是 Verband der Automobilindustrie e. V. (German abbreviation VDA) 和 Verband Deutscher Maschinen-und Anlagenbau e. V. (German abbreviation VDMA)合作的.双方的目的是创建一个通用的接口. 更改接口的提议应提交给VDA与VDMA共同评估,并在做出积极决定的情况下被采用为新版本状态.非常感谢通过GitHub对本文档的贡献.可以在以下链接中找到: http://github.com/vda5050/vda5050.
 
 
 
-# <a name="Ootd"></a> 2 Objective of the document 
+# <a name="Ootd"></a> 2 文档的目的
 
-The objective of the recommendation is to simplify the connection of new vehicles to an existing RCS and thus to integrate into an existing automated guided vehicles (AGV) system when used in the automotive industry and to enable parallel operation with AGV from different manufacturers and conventional systems (inventory systems) in the same working environment.
+本建议的目的是简化新车辆与现有RCS的连接,从而在汽车工业中使用时集成到现有的自动引导车辆(AGV)系统中,并在同一工作环境中与来自不同制造商的AGV和传统系统(库存系统)进行并行操作.
 
-Uniform interface between RCS and AGV shall be defined. 
-In detail, this should be achieved by the following points: 
+定义RCS和AGV之间的统一接口.
+具体而言,通过以下几点实现：
+- 描述AGV和RCS之间的通信标准,从而为使用合作运输车辆 将运输系统集成到连续自动化中奠定基础.
 
-- Description of a standard for communication between AGV and RCS and thus a basis for the integration of transport systems into a continuous process automation using co-operating transport vehicles.
-- Increase in flexibility through, among other things, increased vehicle autonomy, process modules and interface, and preferably the separation of a rigid sequence of event-controlled command chains. 
-- Reduction of implementation time due to high "Plug & Play" capability, as required information (例如 task information) are provided by central services and are generally valid. Vehicles should be able to be put into operation independently of the manufacturer with the same implementation effort taking into account the requirements of occupational safety.
-- Complexity reduction and increase of the "Plug & Play" capability of the systems through the use of uniform, overarching coordination with the corresponding logic for all transport vehicles, vehicle models and manufacturers.
-- Increase in manufacturers independence using common interfaces between vehicle control and coordination level.
-- Integration of proprietary DTS inventory systems by implementing vertical communication between the proprietary RCS and the superordinate RCS (cf.  Figure 1).
+- 除其他外,通过增加车辆自主性、过程模块和接口,以及更好的将事件控制命令链的序列化分开,提高灵活性.
 
-![Figure 1 Integration of DTS inventory systems](./assets/Figure1.png)
->Figure 1 Integration of DTS inventory systems
+- 根据所需信息,由于高“即插即用”能力,缩短了实施时间(例如 任务信息)由RCS提供并且有效.考虑到职业安全的要求,车辆应能够独立于制造商投入运行,并采取相同的实施措施.
 
-In task to implement the above-mentioned objectives, this document describes an interface for the communication of task and status information between AGV and RCS.
+- 通过对所有运输车辆、车辆模型和制造商使用统一的总体协调以及相应的逻辑,降低复杂性并提高系统的“即插即用”能力.
 
-Other interfaces required for operation between AGV and RCS (例如, for exchanging map information, taking special skills freely into account with regard to path planning, 等等.) or for communicating with other system components (例如, external peripherals, fire protection gates, 等等.) are not initially included in this document. 
+- 使用车辆控制和协调层之间的通用接口,提高制造商的独立性.
 
+- 通过在专有RCS和上级RCS之间实现垂直通信,集成专有DTS库存系统(参见图1)
 
+![图1 DTS库存系统的集成](./assets/Figure1.png)
+>图1 DTS库存系统的集成
 
-# <a name="Scope"></a> 3 Scope
+为了实现上述目标,本文件描述了AGV和RCS之间任务和状态信息通信的接口.
 
-This recommendation contains definitions and best practice regarding communication between automated guided vehicles (AGVs) and RCS.
-The goal is to allow AGV with different characteristics (例如, underrun tractor or fork lift AGV) to communicate with RCS in uniform language. 
-This creates the basis for operating any combination of AGV in a RCS.
-RCS provides tasks and coordinates the AGV traffic.
-
-The interface is based on the requirements from production and plant logistics in the automotive industry.
-According to the formulated requirements, the requirements of intralogistics cover the requirements of the logistics department, i.e., the logistical processes from goods receiving to production supply to goods out, through control free navigating vehicles and guided vehicles.
-
-In contrast to automated vehicles, autonomous vehicles solve problems that occur on the basis of the corresponding sensor system and algorithms independently and can react accordingly to changes in a dynamic environment or be adapted to them shortly afterwards. 
-Autonomous properties such as the independent bypassing of obstacles can be fulfilled by free navigating vehicles as well as guided vehicles. 
-However, as soon as the path planning is carried out on the vehicle itself, this document describes free navigating vehicles (see glossary).
-Autonomous systems are not completely decentralized (swarm intelligence) and have defined behavior through predefined rules.
-
-For the purpose of a sustainable solution, an interface is described below which can be expanded in its structure.
-This should enable a complete coverage of RCS for vehicles that are guided. 
-Vehicles that are free navigating can be integrated into the structure; a detailed specification required for this is not part of this recommendation.
-
-For the integration of proprietary stock systems, individual definitions of the interface may be required, which are not considered as part of this recommendation.
+AGV和RCS之间运行所需的其他接口(例如, 交换地图信息,等等.) 或用于与其他系统组件通信(例如, 外部外围设备,防火门,等等.) 不包括在本文件中.
 
 
 
-## <a name="Oad"></a> 3.1 Other applicable documents
+# <a name="Scope"></a> 3 范围
+
+本建议包含关于自动制导车辆(AGV)和RCS之间通信的定义和最佳实践.目标是允许AGV具有不同的特性(例如, 欠载牵引车或叉车AGV)以统一语言与RCS通信.这为在RCS中操作AGV的任何组合奠定了基础.RCS提供任务并协调AGV交通.
+
+该接口基于汽车行业生产和工厂物流的要求.
+
+根据制定的要求,内部物流的要求涵盖了物流部门的要求,即通过无控制导航车辆和引导车辆,从货物接收到生产供应到货物输出的物流流程.
+
+
+
+与自动车辆相比,自动车辆独立地解决基于相应传感器系统和算法发生的问题,并且可以相应地对动态环境中的变化作出反应,或者在不久之后适应这些变化.自主特性,例如独立绕过障碍物,可以通过自由导航车辆和引导车辆来实现.然而,一旦在车辆本身上执行路径规划,本文档将描述自由导航车辆(参见术语表).自主系统不是完全分散的(群体智能),通过预定义的规则定义行为.
+
+为了实现可持续解决方案,下面描述了一个接口,该接口可以在其结构中进行扩展.
+
+这应该能够完全覆盖被引导车辆的RCS.可自由导航的车辆可集成到结构中；本建议不包括为此所需的详细规范.
+
+对于专有库存系统的集成,可能需要接口的单独定义,这不被视为本建议的一部分.
+
+
+## <a name="Oad"></a> 3.1 其他适用的文件
 
 Document (Dokument) | Description 
 ----------------------------------| ----------------
@@ -165,318 +171,275 @@ DIN EN ISO 3691-4 | Industrial Trucks Safety Requirements and Verification-Part 
 
 
 
-# <a name="Rapd"></a> 4 Requirements and protocol definition 
+# <a name="Rapd"></a> 4 需求和协议定义 
 
-The communication interface is designed to support the following requirements: 
+交互接口旨在支持以下要求: 
 
-- Control of min. 1000 vehicles
-- Enabling the integration of vehicles with different degrees of autonomy
-- Enable decision, 例如, with regard to the selection of routes or the behavior at intersections 
+- 控制最少. 1000辆车
+- 能够集成不同自动程度的车辆
+- 具备决策功能, 例如, 在十字路口选择路径或行为
 
-Vehicles should transfer their status at a regular interval or when their status changes. 
+车辆应定期传递其状态或有改变状态时候传递.
 
-Communication is done over wireless networks, taking into account the effects of connection failures and loss of messages. 
+通过无线网络进行通信,要考虑到连接故障和消息丢失的影响.
 
-The message log is Message Queuing Telemetry Transport (MQTT), which is to be used in conjunction with a JSON structure.
-MQTT 3.1.1 was tested during the development of this protocol and is the minimum required version for compatibility.
-MQTT allows the distribution of messages to subchannels, which are called "topics". 
-Participants in the MQTT network subscribe to these topics and receive information that concerns or interests them.
+消息日志采用MQTT,与JSON结构一起使用.MQTT 3.1.1在此协议的开发过程中进行测试,这是兼容性所需的最低版本.MQTT允许将消息分发给subchannels,这些消息称为"topics".MQTT网络的参与者订阅这些主题并接收有关或感兴趣的信息.
 
-The JSON structure allows for a future extension of the protocol with additional parameters.
-The parameters are described in English to ensure that the protocol is readable, comprehensible and applicable outside the German-speaking area.
+JSON结构允许扩展协议,并具有其他参数.这些参数以英语描述,以确保该协议在德语区域之外可读,可理解和适用.
 
 
 
-# <a name="Pacoc"></a> 5 Process and content of communication
+# <a name="Pacoc"></a> 5 通信的过程和内容
 
-As shown in the information flow to the operation of AGV, there are at least the following participants (see Figure 2): 
+如通往AGV操作的信息流中所示, 至少有以下参与者 (见图2): 
 
-- the operator provides basic information
-- RCS organizes and manages the operation 
-- the AGV carries out the tasks
+- 操作员提供基本信息配置
+- RCS组织和管理操作
+- AGV执行任务
 
-Figure 2 describes the communication content during the operational phase.
-During implementation or modification, the AGV and RCS are manually configured. 
+图2描述了操作阶段的通信内容.在实施或修改过程中,AGV和RCS进行手动配置. 
 
-![Figure 2 Structure of the Information Flow](./assets/Figure2.png)
->Figure 2 Structure of the Information Flow
+![图2信息流的结构](./assets/Figure2.png)
+>图2信息流的结构
 
-During the implementation phase, the driverless transport systems (DTS) consisting of RCS and AGV is set up.
-The necessary framework conditions are defined by the operator and the required information is either entered manually by him or stored in RCS by importing from other systems. 
-Essentially, this concerns the following content:
+在实施阶段,  DTS由RCS和AGV组成.
+必要的框架条件由操作员定义,所需的信息要么由他手动输入,要么通过从其他系统中导入RCS中存储在RCS中. 
+本质上,这涉及以下内容:
 
-- Definition of  routes: Using CAD import,  routes can be taken over in RCS.
-Alternatively, routes can also be implemented manually in RCS by the operator.
-Routes can be one-way streets,  restricted for certain vehicle groups (based on the size ratios), 等等.
-- Route network configuration:
-Within the routes, stations for loading and unloading, battery charging stations, peripheral environments (gates, elevators, barriers), waiting positions, buffer stations, 等等. are defined. 
-- Vehicle configuration: The physical properties of an AGV (size, available load carrier mounts, 等等.) are stored by the operator.
-The AGV must communicate this information via the subtopic `factsheet` in a specific way that is defined in the [AGV Factsheet section](#factsheet) of this document.
+- 路线的定义: 使用 CAD 导入,  可以在RCS中接管路线.
+另外,操作员也可以在RC中手动实现路线.
+路线可以是单向路线,受到某些车辆组的限制 (基于尺寸比), 等等.
+- 路径网络配置:
+在路线定义,取放货站台,电池充电站,外围环境(门,电梯,障碍),等待位置,缓冲区站,等等. 
+- 车辆配置: 操作员存储AGV的机械特性(大小,可用的货物装载安装座,等等).
+AGV必须通过子主题`factsheet`传达此信息  以特定的方式定义文档 [AGV Factsheet section](#factsheet).
 
-The configuration of routes and the route network described above is not part of this document.
-It forms the basis for enabling task control and driving course assignment by RCS based on this information and the transport requirements to be completed. 
-The resulting tasks for an AGV are then transferred to the vehicle via an MQTT message broker.
-This then continuously reports its status to RCS in parallel with the execution of the job. 
-This is also done using the MQTT message broker.
+路线的配置和上述路径网络不是本文档的一部分.它构成了基于此信息和要完成的运输要求,是RCS任务控制和行驶分配的基础.然后,通过MQTT消息经broker将AGV的最终任务下发到车辆.然后,并行地向RCS连续报告其状态.这也是使用MQTT消息broker完成的.
 
-Functions of RCS are: 
+RCS的功能是: 
 
-- Assignment of tasks to the AGV
-- Route calculation and guidance of the AGV (taking into account the limitations of the individual physical properties of each AGV, 例如, size, maneuverability, 等等.)
-- Detection and resolution of blockages ("deadlocks")
-- Energy management: Charging tasks can interrupt transfer tasks
-- Traffic control: Buffer routes and waiting positions
-- (temporary) changes in the environment, such as freeing certain areas or changing the maximum speed
-- Communication with peripheral systems such as doors, gates, elevators, 等等. 
-- Detection and resolution of communication errors 
+- 将任务分配给AGV
+- AGV的路线计算和指引 (考虑到每个AGV的单个物理特性的局限性, 例如, 大小, 机动性, 等等.)
+- 检测和解决阻塞 ("死锁")
+- 能源管理：充电任务可以中断转移任务
+- 交通控制：缓冲路线和等待位置
+- (暂时的) 环境变化, 例如释放某些区域或更改最大速度
+- 与外围系统的通信 例如门,大门,电梯, 等等. 
+- 检测和解决通信错误
 
-Functions of the AGV are: 
+AGV的功能是: 
 
-- Localization
-- Navigation along associated routes (guided or autonomous) 
-- Continuous transmission of vehicle status 
+- 定位
+- 沿相关路线行走(规划指导或自主) 
+- 连续传输车辆状态
 
-In addition, the integrator must take into account the following when configuring the overall system (incomplete list): 
+此外, 配置整体系统时,集成商必须考虑以下内容 (列表不完整): 
 
-- Map configuration: The coordinate systems of RCS and the AGV must be matched.
-- Pivot point: The use of different points of the AGV or points of charge as a pivot point leads to different envelopes of the vehicle. The reference point may vary depending on the situation, 例如, it may be different for an AGV carrying a load and for an AGV that does not carry a load.
+- MAP配置：必须匹配RCS和AGV的坐标系.
+- 中心点: 使用AGV的不同点或充电点作为支点会导致车辆的不同包络(不明确).参考点可能因情况而异, 例如,对于载货和不载货的AGV可能会有所不同.
 
 
 
-# <a name="Ps"></a> 6 Protocol specification 
+# <a name="Ps"></a> 6 协议规范
 
-The following section describes the details of the communication protocol.
-The protocol specifies the communication between RCS and the AGV.
-Communication between the AGV and peripheral equipment, 例如, between the AGV and a gate, is excluded.
+以下部分描述了通信协议的详细信息.该协议定义RCS与AGV之间的通信.AGV和外围设备之间的通信, 例如, 在AGV和一个门之间通信被排除在外.
 
-The different messages are presented in tables describing the contents of the fields of the JSON that is sent as an task, state, 等等.
+表中显示了不同的消息,描述了作为任务,state发送的JSON字段的内容,等等.
 
-In addition, JSON schemas are available for validation in the public Git repository (https://github.com/VDA5050/VDA5050/json_schemas).
-The JSON schemas are updated with every release of the VDA5050.
+此外, JSON schemas可在公共GIT存储库中验证 (https://github.com/VDA5050/VDA5050/json_schemas).JSON schemas 随着VDA5050每个release更新.
 
 
 
 ## <a name="Sottamof"></a> 6.1 Symbols of the tables and meaning of formatting
 
-The table contains the name of the identifier, its unit, its data type, and a description, if any.
+该表包含标识符的名称,其单元,其数据类型以及描述(如果有).
 
 Identification | Description [ENG]
 ---|----
-standard | Variable is an elementary data type 
-**bold** | Variable is a non-elementary data type (例如, JSON-object or array) and defined separately
-*italic* | Variable is 可选 
-[Square brackets] | Variable (here arrayName) is an array of the data type included in the square brackets (here the data type is squareBrackets)
+standard | 变量是基本数据类型 
+**bold** | 变量是一种非基本数据类型 (例如, JSON-object或者array)并且单独定义
+*italic* | 变量可选 
+[Square brackets] | 变量(这里arrayname) 是数据类型(方括号中包含)的数组 (这里的数据类型是squareBrackets)
 
-All keywords are case sensitive.
-All field names are in camelCase. 
-All enumerations are in UPPERCASE.
+所有关键字都是区分大小写的,所有字段名称均为驼峰命名法,所有枚举都是大写.
 
 
 
-### <a name="Of"></a> 6.1.1 可选 fields
+### <a name="Of"></a> 6.1.1 可选 字段
 
-If a variable is marked as 可选, it means that it is 可选 for the sender because the variable might not be applicable in certain cases (例如, when RCS sends an task to an AGV, some AGV plan their trajectory themselves and the field trajectory within the segment object of the task can be omitted). 
+如果变量标记为可选,这意味着它是可选,因为变量在某些情况下对于发送人可能不适用 (例如, 当RCS将任务发送到AGV时,某些AGV可以自动寻迹,就可以省略任务段中的trajectory字段). 
 
-If the AGV receives a message that contains a field which is marked as 可选 in this protocol, the AGV is expected to act accordingly and cannot ignore the field. 
-If the AGV cannot process the message accordingly then the expected behavior is to communicate this within an error message and to reject the task.
+如果AGV收到包含该协议中标记为可选的字段的消息,则期望AGV采取相应的行动,并且不能忽略该字段.如果AGV无法相应地处理消息,那么预期的行为是将其传达在错误消息中并拒绝任务.
 
-RCS shall only send 可选 information that the AGV supports.
+RCS仅发送AGV支持的信息.
 
-Example: Trajectories are 可选. 
-If an AGV cannot process trajectories, RCS shall not send a trajectory to the vehicle.
+例子: 轨迹是可选. 
+如果AGV无法处理轨迹,RCS不得向车辆发送轨迹.
 
-The AGV must communicate which 可选 parameters it needs via an AGV factsheet message.
+AGV必须通过AGV FactSheet消息传达其需要的可选参数.
 
 
-### <a name="Pcafl"></a> 6.1.2 Permitted characters and field lengths
+### <a name="Pcafl"></a> 6.1.2 允许的字符和字段长度
 
-All communication is encoded in UTF-8 to enable international adaption of descriptions.
-The recommendation is that IDs should only use the following characters:
+所有通信均在UTF-8中编码,以实现国际描述的适应.
+建议是IDs仅应使用以下字符:
 
 A-Z a-z 0-9 _ - . :
 
-A maximum message length is not defined. 
-If an AGV memory is insufficient to process an incoming task, it is to reject the task.
-The matching of maximum field lengths, string lengths or value ranges is up to the integrator.
-For ease of integration, AGV vendors must supply an AGV factsheet that is detailed in [section 7 - AGV Factsheet](#factsheet).
+最大消息长度未定义.如果AGV内存不足以处理传入的任务,那就是拒绝任务.最大字段长度,字符串长度或值范围的匹配取决于集成符.
+为了易于集成,AGV供应商必须提供一个详细介绍的AGV事实说明 [section 7 - AGV Factsheet](#factsheet).
 
 
 
-### <a name="Noe"></a> 6.1.3 Notation of enumerations 
+### <a name="Noe"></a> 6.1.3 枚举的符号
 
-Enumerations must be written in uppercase. 
-This includes keywords such as the states of the actions (WAITING, FINISHED, 等等...) or values of the "direction" field (LEFT, RIGHT, 443MHZ, 等等...).
-
-
-
-### <a name="JD"></a> 6.1.4 JSON Datatypes 
-
-Where possible, JSON data types must be used.
-A Boolean value is thus encoded by "true / false", NOT with an enumeration (TRUE, FALSE) or magic numbers.
+枚举必须以大写字母写. 
+这包括关键字,例如动作状态 (WAITING, FINISHED, 等等...) 或“direction”字段的值 (LEFT, RIGHT, 443MHZ, 等等...).
 
 
 
-## <a name="MchsaQ"></a> 6.2 MQTT connection handling, security and QoS
+### <a name="JD"></a> 6.1.4 JSON 数据类型 
 
-The MQTT protocol provides the option of setting a last will message for a client.
-If the client disconnects unexpectedly for any reason, the last will is distributed by the broker to other subscribed clients.
-The use of this feature is described in section 6.14.
-
-If the AGV disconnects from the broker, it keeps all the task information and fulfills the task up to the last released point. 
-
-Protocol-Security needs to be taken in account by broker configuration.
-
-To reduce the communication overhead, the MQTT QoS level 0 (Best Effort) is to be used for the topics `task`, `state`, `factsheet` and `visualization`.
-The topic `connection` shall use the QoS level 1 (At Least Once).
+在可能的情况下,必须使用JSON数据类型.
+因此,布尔值由“ true / false”编码,而不是枚举(true,false)或魔术数字.
 
 
 
-## <a name="MTL"></a> 6.3 MQTT-Topic Levels 
+## <a name="MchsaQ"></a> 6.2 MQTT连接处理,安全性和QoS
 
-The MQTT-Topic structure is not strictly defined due to the mandatory topic structure of cloud providers.
-For a cloud-based MQTT-Broker the topic structure has to be adapted individually to match the topics defined in this protocol. 
-This means that the topic names defined in the following sections are mandatory.
+MQTT协议提供了为客户端设置最后一个will消息的选项.
+如果客户出于任何原因意外断开连接,则最后的will由broker分发给其他订阅客户.
+此功能的使用在6.14中描述.
 
-For a local broker the MQTT topic levels are suggested as followed:
+如果AGV与broker断开连接,它将保留所有任务信息并将任务完成到最后一个发布点. 
+
+协议 - 安全需要通过broker配置考虑.
+
+为了减少沟通开销,MQTT QoS级别0(Best Effort最佳努力)将用于 主题:`task`, `state`, `factsheet` 和 `visualization`.主题'connection'应使用QoS级别1(At Least Once至少一次).
+
+
+
+## <a name="MTL"></a> 6.3 MQTT-Topic 级别 
+
+由于云提供商的强制性主题结构,MQTT主题结构并未严格定义.
+对于基于云的MQTT-BROKR,必须单独调整主题结构以匹配此协议中定义的主题. 
+这意味着以下各节中定义的主题名称是强制性的.
+
+对于本地broker,建议MQTT主题级别如下：
 
 **interfaceName/majorVersion/manufacturer/serialNumber/topic**
 
-Example: uagv/v2/KIT/0001/task
+例子: uagv/v2/KIT/0001/task
 
 
 
 MQTT Topic Level | Data type | Description 
 ---|-----|-----
-interfaceName | string | Name of the used interface 
-majorVersion | string | Major version number, preceded by "v"
-manufacturer | string | Manufacturer of the AGV (例如, RobotCompany)
-serialNumber | string | Unique AGV Serial Number consisting of the following characters: <br>A-Z <br>a-z <br>0-9 <br>_ <br>. <br>: <br>-
-topic | string | Topic (例如 task or System State) see Cap. 6.5
+interfaceName | string | 接口的名称 
+majorVersion | string | 主要版本编号,先于"v"
+manufacturer | string | AGV制造商 (例如, huashine)
+serialNumber | string | 由以下字符组成的唯一AGV序列号: <br>A-Z <br>a-z <br>0-9 <br>_ <br>. <br>: <br>-
+topic | string | Topic (例如 任务或系统状态) 查看 Cap. 6.5  
 
-Note: Since the `/` character is used to define topic hierarchies, it must not be used in any of the aforementioned fields.
-The `$` character is also used in some MQTT brokers for special internal topics, so it should not be used either.
+Note: `/` 字符用于定义主题层次结构,不得在上述任何字段中使用它.
+ `$` 字符在某些MQTT broker中也用于特殊的内部主题,因此也不应使用它.
 
-## <a name="PH"></a> 6.4 Protocol Header
+## <a name="PH"></a> 6.4 Protocol 头
 
-Each JSON starts with a header.
-In the following sections, the following fields will be referenced as header for readability. 
-The header consists of the following individual elements. 
-The header is not a JSON object.
+每个JSON都包含协议header.在以下各节中,以下字段将被称为可读性的header. header包括以下元素. header不是JSON对象.
 
 Object structure/Identifier | Data type | Description 
 ---|---|---
-headerId | uint32 | header ID of the message.<br> The headerId is defined per topic and incremented by 1 with each sent (but not necessarily received) message. 
-timestamp | string | Timestamp (ISO 8601, UTC); YYYY-MM-DDTHH:mm:ss.ssZ (例如"2017-04-15T11:40:03.12Z”)
-version | string | Version of the protocol [Major].[Minor].[Patch] (例如 1.3.2)
-manufacturer | string | Manufacturer of the AGV 
-serialNumber | string | Serial number of the AGV 
+headerId | uint32 | 信息头ID.<br> headerId每个topic定义并且每次发送信息自增1(但不一定收到). 
+timestamp | string | 	日期时间 (ISO 8601, UTC); YYYY-MM-DDTHH:mm:ss.ssZ (例如"2017-04-15T11:40:03.12Z”)
+version | string | 	协议版本 [Major].[Minor].[Patch] (例如 1.3.2)
+manufacturer | string | AGV厂商
+serialNumber | string | AGV序列号 
 
 ### Protocol version
 
-The protocol version uses semantic versioning as versioning schema.
+协议版本使用语义版本作用作为版本架构.
 
-Examples for major version changes: 
+主要版本更改的示例: 
 
-- Breaking changes, 例如, new non-可选 fields
+- 重大变更, 例如, 新的非可选字段
 
-Examples for minor version changes: 
+次要版本更改的示例: 
 
-- New features like an additional topic for visualization 
+- 新功能,例如可视化的附加主题 
 
-Examples for patch version: 
+补丁版本的示例: 
 
-- Higher available precision for a batteryCharge 
+- 电池充电的可用精度更高 
 
 
 
-## <a name="Sfc"></a> 6.5 Subtopics for communication
+## <a name="Sfc"></a> 6.5 通信Subtopics
 
-The AGV protocol uses the following topics for information exchange between RCS and AGV
+AGV协议使用以下主题进行RCS和AGV之间的信息交换
 
 Subtopic name | Published by | Subscribed by | Used for | Implementation | Schema 
 ---|---|---|---|---|---
-task | RCS | AGV | Communication of driving tasks from RCS to the AGV | mandatory | task.schema 
-instantactions | RCS | AGV | Communication of the actions that are to be executed immediately | mandatory | instantactions.schema
-state | AGV | RCS | Communication of the AGV state | mandatory | state.schema
-visualization | AGV | Visualization systems | Higher frequency of position topic for visualization purposes only | 可选 | visualization.schema
-connection | Broker/AGV | RCS | Indicates when AGV connection is lost, not to be used by RCS for checking the vehicle health, added for an MQTT protocol level check of connection | mandatory | connection.schema 
-factsheet | AGV | RCS | Setup of AGV in RCS | mandatory | factsheet.schema
+task | RCS | AGV | RCS给AGV任务的通信 | mandatory | task.schema 
+instantactions | RCS | AGV | 立即执行动作的通信  | mandatory | instantactions.schema
+state | AGV | RCS | AGV state状态上报 | mandatory | state.schema
+visualization | AGV | Visualization systems | 仅用于可视化目的的位置topic较高频率 | 可选 | visualization.schema
+connection | Broker/AGV | RCS | 指示何时丢失AGV连接, 不是用来RCS检测车辆健康状态, 为MQTT协议级别检查连接 | mandatory | connection.schema 
+factsheet | AGV | RCS | RCS中设置AGV属性 | mandatory | factsheet.schema
 
 
-## <a name="TOfmctA"></a> 6.6 Topic: "task"(from RCS to AGV)
+## <a name="TOfmctA"></a> 6.6 Topic: "task"(从 RCS 到 AGV)
 
-The topic "task" is the MQTT topic via which the AGV receives a JSON encapsulated task. 
-
-
-
-### <a name="CaL"></a> 6.6.1 Concept and Logic 
-
-The basic structure of an task is a graph of points and segments.
-The AGV is expected to traverse the points and segments to fulfill the task.
-The full graph of all connected points and segments is held by RCS.
-
-The graph representation in RCS contains restrictions, 例如, which AGV is allowed to traverse which segment.
-These restrictions will not be communicated to the AGV.
-RCS only includes segments in an AGV task which the concerning AGV is allowed to traverse.
-
-It is to be avoided that RCS has a separate graph representation for each type of AGV.
-Whenever possible, one location, 例如, a waiting position in front of fire door, should only have one point for all types of AGV.
-However, due to the different sizes and specifications of AGV, it might be necessary to deviate from this standard in certain situations.
-
-![Figure 3 Graph representation in RCS and graph transmitted in tasks](./assets/Figure3.png) 
->Figure 3 Graph representation in RCS and graph transmitted in tasks
-
-The points and segments are passed as two lists in the task message.
-The lists task also governs in which sequence the points and segments must be traversed.
-
-For a valid task, at least one point must be present. 
-The number of acceptable segments is the number of points minus one, not more or less.
-
-The first point of an task must be trivially reachable for the AGV. 
-This means either that the AGV is already standing on the point, or that the AGV is in the points deviation range.
-
-points and segments both have a boolean attribute "released”.
-If a point or segment is released, the AGV is expected to traverse it. 
-If a point or segment is not released, the AGV must not traverse it.
-
-An segment only can be released, if both the start and end point of the segment are released.
-
-After an unreleased segment, no released points or segments can follow in the sequence. 
-
-The set of released points and segments are called the "base”. 
-The set of unreleased points and segments are called the "horizon”.
-
-It is valid to send an task without a horizon.
-
-An task message does not necessarily describe the full transport task. 
-For traffic control and to accommodate resource constrained vehicles, the full transport task (which might consist of many points and segments) can be split up into many sub-tasks, which are connected via their orderId and orderUpdateId. 
-The process of updating an task is described in the next section.
+主题“task”是MQTT主题,AGV接收JSON封装的任务. 
 
 
 
-### <a name="Oaou"></a> 6.6.2 tasks and task update 
+### <a name="CaL"></a> 6.6.1 概念和逻辑 
 
-For traffic control the task-topic includes only the path to a decision point. 
-Before reaching the decision point, RCS will send an updated path with additional path segments.
-To communicate to the AGV what it will most likely have to do after reaching the decision point, an task consists of two separate parts: 
+任务的基本结构是点和段的图表.AGV将通过点和片段以完成任务.所有连接点和段的完整图由RCS保存.
 
-- <u>Drive to the decision point "Base":</u> The "Base" is the defined route that the AGV travels. All points and segments of the "Base" route have already been approved by the control panel for the vehicle. 
-- <u>Estimated journey from the decision point "Horizon":</u> The "Horizon" is the route that the AGV is likely to drive, if there is no traffic jam. The "Horizon" route has not yet been approved by the control panel. However, the AGV will initially only travel to the last junction of the "Base" route.
+RCS中的图表 包含路径限制,例如 允许哪种AGV通过哪种片段.这些限制不会传达给AGV.RCS仅在AGV任务中包含允许AGV途径的段.
 
-Since MQTT is an asynchronous protocol and transmission via wireless networks is not reliable, it is important to note, that the "base" cannot be changed. 
-RCS can therefore assume that the "base" is executed by the AGV.
-A later section describes a procedure for cancelling an task, but this is also considered unreliable due to the communication restrictions mentioned above.
+应该避免RCS对每种类型AGV的有单独的图表表示.只要有可能, 一个位置, 例如, 防火门前等待点, 需要对所有车仅有一个点.然而,由于AGV的大小和规格不同, 在某些情况下可能有必要偏离此标准.
 
-RCS has the possibility to change the driving commands of the "Horizon" route. 
-Before the AGV arrives at the decision point via the "base" route, RCS will send an updated route to the AGV, which includes the other points. 
-The procedure for changing the Horizon route is shown in Figure 4.
+![图3 RCS中的图形表示和任务中传输的图形表示](./assets/Figure3.png) 
+>图 3 RCS中的图形表示和任务中传输的图形表示
 
-![Figure 4 Procedure for changing the driving route "Horizon"](./assets/Figure4.png)
->Figure 4 Procedure for changing the driving route "Horizon"
+这些点和段作为任务消息中的两个列表传递.列表任务还控制着 必须途径点和段的顺序.
 
-In Figure 4, an initial job is first sent by the control panel at time t = 1.
-Figure 5 shows the pseudocode of a possible job.
-For the sake of readability, a complete JSON example has been omitted here.
+对于有效的任务,至少必须存在一个点. 可接受的段数是点的数量-1,而不是多或少.
+
+任务的第一点必须在AGV上可以达到. 这意味着要么AGV已经站在该点上,要么AGV在该点偏差范围内.
+
+点和片段都具有布尔属性"released”.如果点或段"released”,则预计AGV将穿过它. 如果点或段不是"released”,则AGV不能穿过它. 
+
+一个片段可以被released,如果片段的起点和终点都被released.
+
+在未released的段后,没有released的点或段可以按顺序排序. 
+
+released点和片段集合被称为"base".unreleased点和片段集合被称为"horizon".
+
+发送一个没有"horizon"的任务也是有效的.
+
+任务消息不一定描述完整的运输任务. 用于交通管制并容纳资源约束车辆, 完整的运输任务 (这可能包括许多要点和片段)可以分为许多子任务, 通过其OrderID和OrderUpdateID连接. 下一节中描述更新任务的过程.
+
+
+
+### <a name="Oaou"></a> 6.6.2 任务和任务更新 
+
+对于交通控制,task-topic仅包括通往决策点的路径.在达到决策点之前,RCS将发送带有其他路径段的更新路径.要与AGV通信达到决策点后最有可能要做的事情,一个任务由两个单独的部分组成: 
+
+- <u>行驶到决策点 "Base":</u> "Base" 是AGV必经行驶的路线. “Base”路线的所有点和段已经被RCS批准给了此车辆. 
+- <u>从决策点进行估计的路径 "Horizon":</u> "Horizon" 是AGV可能行驶的路线, 如果没有交通拥堵. "Horizon" 路线尚未获得RCS的确认. 但是,AGV最初只能前往“Base”路线的最后一个点.
+
+由于MQTT是一种异步协议,并且通过无线网络传输不可靠,因此请注意,“base”不能更改. 因此,RCS可以假设“base”是由AGV执行的.后面的一节描述了取消任务的过程,但由于上述通信限制,这也被认为是不可靠的.
+
+RCS有可能更改“Horizon”路线. 在AGV通过“base”路线到达决策点之前, RCS将向AGV发送更新的路径,其中包括其他点. 更改Horizon路线的过程如图4所示.
+
+![图4更改"Horizon"行驶路线的过程 ](./assets/Figure4.png)
+>图4更改"Horizon"行驶路线的过程
+
+在图4中,RCS首先 发送初始作业 在t = 1.图5显示了可能工作的伪代码.为了可读性,这里省略了一个完整的JSON示例.
 
 ```
 {
@@ -497,12 +460,12 @@ For the sake of readability, a complete JSON example has been omitted here.
 	]
 }
 ```
->Figure 5 Pseudocode of an task
+>图5任务的伪代码
 
-At time t = 3, the task is updated by sending an extension of the task (see example in Figure 6). 
-Note that the "orderUpdateId" is incremented and that the first point of the job update corresponds to the last shared base point of the previous task message.
+在t = 3, 通过发送任务的扩展来更新任务(请参见图6中的示例). 
+注意"orderUpdateId" 增加并且任务更新的第一点对应于上一个任务消息base路径的最后一个点.
 
-This ensures that the AGV can also perform the job update, i.e., that the first point of the job update is reachable by executing the segments already known to the AGV.
+这样可以确保AGV也可以执行任务更新,即,通过执行AGV已知的段来达到工作更新的第一点.
 
 ```
 }
@@ -521,191 +484,169 @@ This ensures that the AGV can also perform the job update, i.e., that the first 
 	]
 }
 ```
->Figure 6 Pseudocode of an task update. Please look out for the change of the "orderUpdateId"
+>图6任务更新的伪代码. 请注意"orderUpdateId"改变
 
-This also aids in the event that an orderUpdate goes missing (because of unreliable wireless network). 
-The AGV can always check that the last known base point has the same nodeId (and nodeSequenceId, more on that later) as the first new base point.
+这也有助于orderUpdate丢失的事件(由于不可靠的无线网络).AGV始终可以检查最后一个已知的base点是否具有相同的nodeid(nodeSequenceId, 大于前者) 作为第一个新base点.
 
-Also note that point 7 is the only base point that is sent again.
-Since the base cannot be changed, a retransmission of points 6 and 4 is not valid.
+另请注意,第7点是再次发送的唯一基点.由于无法更改base,因此第6和4点的重传是无效的.
 
-It is important, that the contents of the stitching point (point 7 in the example case) are not changed. 
-For actions, deviation range, 等等. the AGV must use the instructions provided in the first task (Figure 5, orderUpdateId 0).
+重要的是,缝合点的内容(示例中的点7)没有更改. 对于动作,偏差范围,等等. AGV必须使用第一个任务中提供的说明(图5,OrderUpdateID 0).
 
-![Figure 7 Regular update process - task extension](./assets/Figure7.png)
->Figure 7 Regular update process - task extension
+![图7常规更新过程 - 任务扩展](./assets/Figure7.png)
+>图7常规更新过程 - 任务扩展
 
-Figure 7 describes how an task should be extended.
-It shows the information, that is currently available on the AGV. 
-The orderId stays the same and the orderUpdateId is incremented. 
+图7描述了如何扩展任务.它显示了当前在AGV上可用的信息.orderID保持不变,并且orderUpdateId会增加.
 
-The last point of the previous base is the first base point in the updated task.
-With this point the AGV can add the updated task onto the current task (stitching). 
-The other points and segments from the previous base are not resent.
+上一个base的最后一点是更新任务的第一个base点.在这一点上,AGV可以将更新的任务添加到当前任务(缝线)中.上一个base的其他点和段不会再下发.
 
-RCS has the option to make changes to the horizon by sending entirely different points as the new base.
-The horizon can also be deleted.
+RCS可以通过将完全不同的点作为新base发送给AGV,以便对horizon进行更改.horizon也可以删除.
 
-To allow loops in tasks (like going from point 1 to 2 and then back to 1) a sequenceId is assigned to the point and segment objects. 
-This sequenceId runs over the points and segments (first point of an task receives a 0, the first segment then gets the 1, the second point then gets the 2, and so on). 
-This allows for easier tracking of the task progress.
 
-Once a sequenceId is assigned, it does not change with task updates (see Figure 7). 
-This is necessary to determine on AGV side to which point RCS refers to. 
+为了允许任务中的循环(例如从点1到2,然后返回1)sequenceId分配给点和段对象.该sequenceId在点和段上运行(任务的第一个点接收到0,然后第一个段获得1,第二点然后获得2点,然后获得2,依此类推).这可以更轻松地跟踪任务进度.
 
-Figure 8 describes the process of accepting an task or orderUpdate.
+一旦分配了sequenceId,就不会随着任务更新而更改(请参见图7). 这对于确定AGV到哪个点是必不可少的.
 
-![Figure 8 The process of accepting an task or orderUpdate](./assets/Figure8.png)
->Figure 8 The process of accepting an task or orderUpdate
+图8 描述接受任务或orderUpdate的过程.
+
+![图8接受任务或orderUpdate的过程](./assets/Figure8.png)
+>图8接受任务或orderUpdate的过程
 
 
 
-### <a name="OCbMC"></a> 6.6.3 task Cancellation (by RCS)
+### <a name="OCbMC"></a> 6.6.3 取消任务 (通过 RCS)
 
-In the event of an unplanned change in the base points, the task must be canceled by using the instantaction cancelOrder.
+如果base点发生未计划的更改,则必须通过使用instantaction cancelOrder来取消该任务.
 
-After receiving the instantaction cancelOrder, the vehicle stops (based on its capabilities, 例如, right where it is or on the next point).
+在接收到instantaction cancelOrder, 车辆停止(根据其功能, 例如, 停在当前位置或下一个点).
 
-If there are actions scheduled, these actions must be cancelled and should report "failed” in their actionstate. 
-If there are running actions, those actions should be cancelled and also be reported as failed.
-If the action cannot be interrupted, the actionstate of that action should reflect that by reporting "running” while it is running, and after that the respective state ("finished”, if  successful and "failed”, if not).
-While actions are running, the cancelOrder action must report "running”, until all actions are cancelled/finished. 
-After all vehicle movements and all actions are stopped, the cancelOrder action status must report "finished”.
+如果计划执行action,则必须取消这些操作,并且应在其action state上报告“failed”.如果有运行动作,则应取消这些动作,并报告为失败.如果动作无法中断, 该动作的动作态应报告“running”,然后在此之后(如果成功的话,“完成”和“失败”(如果没有)).在操作运行时,取消行动必须报告“运行”,直到所有操作都取消/完成. 在所有车辆移动和所有操作都停止后,取消命令动作状态必须报告“完成”.
 
-The orderId and orderUpdateId is kept. 
+OrderID和OrderUpDateID保留. 
 
-Figure 9 shows the expected behavior for different AGV capabilities.
+图9显示了不同AGV功能的预期行为.
 
-![Figure 9 Expected behavior after a cancelOrder](./assets/Figure9.png)
->Figure 9 Expected behavior after a cancelOrder
+![图9取消订单后的预期行为](./assets/Figure9.png)
+>图9取消订单后的预期行为
 
 
 
-#### <a name="Ranoac"></a> 6.6.3.1 Receiving a new task after cancellation
+#### <a name="Ranoac"></a> 6.6.3.1 取消后收到新任务
 
-After the cancellation of an task, the vehicle must be in a state to receive a new task. 
+取消任务后,车辆必须处于一个state才能接收新任务. 
 
-In the case of an AGV that localizes itself on points via a tag, the new task has to begin on the point the AGV is now standing on (see also Figure 5).
+如果AGV通过标签将自己定位在点上,则新任务必须从AGV所在的点开始(另请参见图5). 
 
-In case of an AGV that can stop in-between points, the choice is up to RCS how the next task should be started. 
-The AGV must accept both methods.
+如果AGV可以停止在点之间,则选择应取决于RCS如何启动下一个任务.AGV必须接受这两种方法. 
 
-There are two options:
+有两个选择：
 
-- Send an task, where the first point is a temporary point that is positioned where the AGV currently stands. The AGV must then realize that this point is trivially reachable and accept the task.
-- Send an task, where the first point is the last traversed point of the previous task but set the deviation range so large that the AGV is within this range. Thus, the AGV must realize that this point must be counted as traversed and accept the task.
-
+- 发送一个任务,其中第一个点是一个临时点,位于AGV当前所在的位置. 然后,AGV必须确认这个点并接受任务. 
+- 发送一个任务,其中第一个点是上一个任务的最后一个穿越点,但设置了大偏差范围,使AGV在此范围内. 因此,AGV必须意识到这一点必须被算作穿过并接受任务.
 
 
-#### <a name="RacawAhno"></a> 6.6.3.2 Receiving a cancelOrder action when AGV has no task
+#### <a name="RacawAhno"></a> 6.6.3.2 当AGV没有任务时,接收取消订单
 
-If the AGV receives a cancelOrder action but the AGV currently has no task, or the previous task was cancelled, the cancelOrder action must report as failed.
+如果AGV收到取消订单操作,但AGV当前没有任务,或者以前的任务已取消,则取消订单操作必须按失败报告. 
 
-The AGV must report a "noOrderToCancel” error with the errorLevel set to warning. 
-The actionId of the instantaction must be passed as an errorReference.
+AGV必须报告“noOrderToCancel”错误,并将ErrorLevel设置为警告.instantaction的动作ID必须作为errorReference传递.
 
 
 
-### <a name="Or"></a> 6.6.4 task rejection
+### <a name="Or"></a> 6.6.4 任务拒绝
 
-There are several scenarios, when an task must be rejected. 
-These are explained in Figure 8.
-
-
-
-#### <a name="Vgamno"></a> 6.6.4.1 Vehicle gets a malformed new task
-
-Resolution:
-
-1. Vehicle does NOT take over the new task in its internal buffer. 
-2. The vehicle reports the warning "validationError"
-3. The warning must be reported until the vehicle has accepted a new task.
+有几种情况必须拒绝任务.在图8中描述.
 
 
 
-#### <a name="Vraowaicpeglhhtmlholaansii"></a> 6.6.4.2 Vehicle receives an task with actions it cannot perform (例如 lifting height higher than maximum lifting height, or lifting actions although no stroke is installed), or with fields that it cannot use (例如 Trajectory)
+#### <a name="Vgamno"></a> 6.6.4.1 车辆得到了错误的新任务
 
-Resolution: 
+解决方法： 
 
-1. Vehicle does NOT take over the new task in its internal buffer 
-2. Vehicle reports the warning "orderError" with the wrong fields as error references
-3. The warning must not be reported until the vehicle has accepted a new task. 
+1.车辆不会接这个新任务. 
+2.车辆报告警告"validationError"在报警字段
+3.必须报告警告,直到车辆接受新任务为止.
 
 
+#### <a name="Vraowaicpeglhhtmlholaansii"></a> 6.6.4.2 车辆收到一个行动无法执行的任务 (例如 提起高度高于最大提升高度或没有安装举升设备的举升动作), 或与无法使用的字段 (例如 Trajectory)
 
-#### <a name="Vehiclegets"></a> 6.6.4.3 Vehicle gets a new task with the same orderId, but a lower orderUpdateId than the current orderUpdateId
+解决方法： 
 
-Resolution: 
+1.车辆不会接这个新任务. 
+2.车辆报告警告"orderError"在报警字段
+3.必须报告警告,直到车辆接受新任务为止.
 
-1. Vehicle does NOT take over the new task in its internal buffer. 
-2. Vehicle keeps the PREVIOUS task it its buffer. 
-3. The vehicle reports the warning "orderUpdateError"
-4. The vehicle continues with the executing the previous task. 
 
-If the AGV receives an task with the same orderId and orderUpdateId twice, the second task will be ignored. 
-This might happen, if RCS sends the task again, because the status message came too late and RCS could not verify that the first task was received.
+#### <a name="Vehiclegets"></a> 6.6.4.3 车辆获得了一项相同orderid的新任务,但orderUpdateId比当前的低
+
+解决方法： 
+
+1.车辆不会接这个新任务. 
+2.车辆保持之前的任务
+3.车辆报告警告"orderUpdateError"在报警字段
+4.车辆继续之前的任务.
+
+如果AGV两次接收具有相同订购和OrderUpdateID的任务,则将忽略第二个任务. 
+如果RCS再次发送任务,这可能会发生这种情况,因为状态消息来得太晚了,RCS无法验证收到的第一个任务.
 
 
 
 ### <a name="Maps"></a> 6.6.5 Maps
 
-To ensure consistent navigation among different types of AGV, the position is always specified in reference to the local map coordinate system (see Figure 10).
-For the differentiation between different levels a unique mapId is used.
-The map coordinate system is to be specified as a right-handed coordinate system with the z-axis pointing skywards. 
-A positive rotation therefore is to be understood as a counterclockwise rotation. 
-The vehicle coordinate system is also specified as a right-handed coordinate system with the x-axis pointing in the forward direction of the vehicle and the z-axis pointing skywards. 
-This is in accordance with chapter 2.11 in DIN ISO 8855.
+为了确保不同类型的AGV之间的稳定导航,用地图坐标系指定该位置(请参见图10).对于不同级别(地图)之间的差异化,使用了唯一的mapID. 
+地图坐标系应指定为右撇子坐标系,Z轴指向天空.因此,正旋转应理解为逆时针旋转.车辆坐标系也被指定为右撇子坐标系,X轴指向车辆的正方向,Z轴指向天空. 
+ 这与DIN ISO 8855中的第2.11章一致.
 
-![Figure 10 Coordinate system with sample AGV and orientation](./assets/Figure10.png)
->Figure 10 Coordinate system with sample AGV and orientation
+![图10带有例子AGV和方向的坐标系](./assets/Figure10.png)
+>图10带有例子AGV和方向的坐标系
 
-The X, Y and Z coordinates must be in meters. 
-The orientation must be in radians and must be within +Pi and –Pi.
+X,Y和Z坐标必须为米.方向必须为弧度,并且必须在 +pi和–pi内.
 
-![Figure 11 Coordinate systems for map and vehicle](./assets/Figure11.png)
->Figure 11 Coordinate systems for map and vehicle
+![图11地图和车辆的坐标系](./assets/Figure11.png)
+>图11地图和车辆的坐标系
 
 
+> 校对到此 2022年8月30日 22:08:28
 
-## <a name="Iotom"></a> 6.7 Implementation of the task message
+## <a name="Iotom"></a> 6.7 任务消息的实施
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
-headerId | | uint32 | Header ID of the message.<br> The headerId is defined per topic and incremented by 1 with each sent (but not necessarily received) message. 
-timestamp | | string | Timestamp (ISO 8601, UTC); YYYY-MM-DDTHH:mm:ss.ssZ (例如"2017-04-15T11:40:03.12Z”)
-version | | string | Version of the protocol [Major].[Minor].[Patch] (例如 1.3.2)
-manufacturer | | string | Manufacturer of the AGV 
-serialNumber | | string | Serial number of the AGV 
-orderId |  | string | task identification.<br> This is to be used to identify multiple task messages that belong to the same task. 
-orderUpdateId |  | uint32 | task update identification.<br>Is unique per orderId.<br>If an task update is rejected, this field is to be passed in the rejection message
-zoneSetId |  | string | Unique identifier of the zone set, that the AGV has to use for navigation or that was used by RCS for planning. <br> <br> 可选: Some RCS systems do not use zones.<br> Some AGV do not understand zones.<br> Do not add to message, if no zones are used. 
-**points [point]** |  | array | Array of points objects to be traversed for fulfilling the task. <br>One point is enough for a valid task. <br>Leave segment list empty for that case. 
-**segments [segment]** |  | array | Array of segment objects to be traversed for fulfilling the task. <br>One point is enough for a valid task. <br>Leave segment list empty for that case.
+headerId | | uint32 | 信息头ID.<br> headerId每个topic定义并且每次发送信息自增1(但不一定收到). 
+timestamp | | string | 日期时间 (ISO 8601, UTC); YYYY-MM-DDTHH:mm:ss.ssZ (例如, "2017-04-15T11:40:03.12Z”)
+version | | string | 协议版本 [Major].[Minor].[Patch] (例如, 1.3.2).
+manufacturer | | string | AGV厂商. 
+serialNumber | | string | AGV序列号.
+Actions [action] | | array | 需要立即执行的动作组并且不是常规任务重的一部分. 
+orderId |  | string | 任务标识.<br> 这将用于识别属于同一任务的多个任务消息. 
+orderUpdateId |  | uint32 | 任务更新标识.<br>每个orderId是唯一的.<br>如果更新任务被拒绝,则将在拒绝消息中传递此字段
+zoneSetId |  | string | 区域集的唯一标识符, AGV用于导航或RCS用于规划. <br> <br> 可选:一些RCS系统不使用区域.<br> 一些AGV不了解区域.<br> 如果没有区域使用,请勿添加到任务消息. 
+**points [point]** |  | array | 任务内要途径的点对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表. 
+**segments [segment]** |  | array | 任务内要途径的片段对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表.
 
 Object structure | Unit | Data type | Description
 ---|---|---|---
 **point** { |  | JSON-object|   
-nodeId |   |  string | Unique point identification
-sequenceId |  | uint32 | Number to track the sequence of points and segments in an task and to simplify task updates. <br>The main purpose is to distinguish between a point, which is passed more than once within one orderId. <br>The variable sequenceId runs across all points and segments of the same task and is reset when a new orderId is issued. 
-*nodeDescription* |  | string | Additional information on the point 
-released |  | boolean | "true" indicates that the point is part of the base. <br> "false" indicates that the point is part of the horizon. 
-***nodePosition*** |  | JSON-object | point position. <br>可选 for vehicle-types that do not require the point position (例如, line-guided vehicles).
-**actions [action]** <br> } |  | array | Array of actions to be executed on a point. <br>Empty array, if no actions required. 
+nodeId |   |  string | 唯一的点标识
+sequenceId |  | uint32 | 跟踪任务中的点和段的顺序并简化任务更新. <br>主要目的是区分一个点,该点在一个orderid中不止一次出现. <br>变量sequenceId在同一任务的所有点和段中运行,并在发出新的OrderID时重置.
+*nodeDescription* |  | string | 有关该点的其他信息 
+released |  | boolean | "true" 表示该点是base的一部分. <br> "false" 表示该点是horizon的一部分. 
+***nodePosition*** |  | JSON-object | 点位置. <br>可选 对于不需要点位置的车辆类型(例如, line制导车辆).
+**actions [action]** <br> } |  | array | 在某个点执行的一系列动作. <br>空数组,如果不需要操作. 
 
 Object structure | Unit | Data type | Description 
 ---| --- |--- | ---
-**nodePosition** { |  | JSON-object | Defines the position on a map in a global project specific world coordinate system. <br>Each floor has its own map. <br>All maps must use the same project specific global origin. 
-x | m | float64 | X-position on the map in reference to the map coordinate system. <br>Precision is up to the specific implementation. 
-y | m | float64 | Y-position on the map in reference to the map coordinate system. <br>Precision is up to the specific implementation. 
-*theta* | rad | float64 | Range: [-Pi ... Pi] <br><br>Absolute orientation of the AGV on the point.<br> 可选: vehicle can plan the path by itself.<br>If defined, the AGV has to assume the theta angle on this point.<br>If previous segment disallows rotation, the AGV must rotate on the point.<br>If following segment has a differing orientation defined but disallows rotation, the AGV is to rotate on the point to the segments desired rotation before entering the segment.
-*allowedDeviationXY* |  | float64 | Indicates how exact an AGV has to drive over a point in task for it to count as traversed. <br><br> If = 0: no deviation is allowed (no deviation means within the normal tolerance of the AGV manufacturer). <br><br> If > 0: allowed deviation-radius in meters. <br>If the AGV passes a point within the deviation-radius, the point is considered to have been traversed.
-*allowedDeviationTheta* |  | float64 | Range: [0 ... Pi] <br><br> Indicates how big the deviation of theta angle can be. <br>The lowest acceptable angle is theta - allowedDeviationTheta and the highest acceptable angle is theta + allowedDeviationTheta.
-mapId |  | string | Unique identification of the map in which the position is referenced. <br> Each map has the same project specific global origin of coordinates. <br>When an AGV uses an elevator, 例如, leading from a departure floor to a target floor, it will disappear off the map of the departure floor and spawn in the related lift point on the map of the target floor.
-*mapDescription* <br> } |  | string | Additional information on the map.
+**nodePosition** { |  | JSON-object | 在世界坐标系中定义地图上的位置. <br>每个楼层都有自己的地图. <br>All maps must use the same project specific global origin. 
+x | m | float64 | 地图上的X位置参考地图坐标系. <br>精度取决于特定的实现. 
+y | m | float64 | 地图上的Y位置参考地图坐标系. <br>精度取决于特定的实现. 
+*theta* | rad | float64 | 范围: [-Pi ... Pi] <br><br>AGV的绝对方向.<br> 可选: 车辆可以自己计划路径.<br>如果定义,AGV必须在此点达到theta角度.<br>如果以前的段不允许旋转,则AGV必须在点上旋转.<br>如果接下来的段定义了不同的方向并且段禁止旋转,则AGV需要在段的起点上旋转到所需的角度.
+*allowedDeviationXY* |  | float64 | 指示AGV在任务中如何认为点已经通过. <br><br> If = 0: 不允许偏差 (没有偏差意味着在AGV制造商的正常偏差范围内). <br><br> If > 0: 允许偏离(米). <br>如果AGV在经过点的时候在deviation-radius内,则认为该点已被途径.
+*allowedDeviationTheta* |  | float64 | 范围: [0 ... Pi] <br><br> 指示theta角度的偏差有多大. <br>最低可接受的角度是theta-allowedDeviationTheta,最高可接受的角度是theta +allowedDeviationTheta.
+mapId |  | string | 位置所在地图的唯一标识. <br> 每张地图具有相同的项目特定的全局原始坐标. <br>当AGV使用电梯时, 例如, 从一个楼层到另一个楼层,它将消失在离开楼层的地图出现在目标楼层电梯点.
+*mapDescription* <br> } |  | string | 地图上的其他信息.
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
-**action** { |  | JSON-object | Describes an action that the AGV can perform. 
+**action** { |  | JSON-object | 描述AGV可以执行的动作. 
 actionType |  | string | Name of action as described in the first column of "actions and Parameters”. <br> Identifies the function of the action. 
 actionId |  | string | Unique ID to identify the action and map them to the actionstate in the state. <br>Suggestion: Use UUIDs.
 *actionDescription* |  | string | Additional information on the action
@@ -714,38 +655,38 @@ blockingType |  | string | Enum {NOTE, SOFT, HARD}: <br> "NONE"- allows driving 
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
-**segment** { |  | JSON-object | Directional connection between two points.
-edgeId |  | string | Unique segment identification.
-sequenceId |  | Integer | Number to track the sequence of points and segments in an task and to simplify task updates. <br>The variable sequenceId runs across all points and segments of the same task and is reset when a new orderId is issued.
-*edgeDescription* |  | string | Additional information on the segment.
-released |  | boolean | "true" indicates that the segment is part of the base.<br>"false" indicates that the segment is part of the horizon. 
-startNodeId |  | string | nodeId of startNode.
-endNodeId |  | string | nodeId of endNode.
-*maxSpeed* | m/s | float64 | Permitted maximum speed on the segment. <br>Speed is defined by the fastest measurement of the vehicle.
-*maxHeight* | m | float64 | Permitted maximum height of the vehicle, including the load, on segment.
-*minHeight* | m | float64 | Permitted minimal height of the load handling device on the segment.
-*orientation* | rad | float64 | Orientation of the AGV on the segment. The value *orientationType* defines if it has to be interpreted relative to the global project specific map coordinate system or tangential to the segment. In case of interpreted tangential to the segment 0.0 = forwards and PI = backwards. <br>Example: orientation Pi/2 rad will lead to a rotation of 90 degrees.<br><br>If AGV starts in different orientation, rotate the vehicle on the segment to the desired orientation if rotationAllowed is set to "true”.<br>If rotationAllowed is "false", rotate before entering the segment.<br>If that is not possible, reject the task.<br><br>If no trajectory is defined, apply the rotation to the direct path between the two connecting points of the segment.<br>If a trajectory is defined for the segment, apply the orientation to the trajectory. 
-*orientationType* |  | string | Enum {`GLOBAL`, `TANGENTIAL`}: <br>"GLOBAL"- relative to the global project specific map coordinate system;<br>"TANGENTIAL"- tangential to the segment.<br><br>If not defined, the default value is "TANGENTIAL".
-*direction* |  | string | Sets direction at junctions for line-guided or wire-guided vehicles, to be defined initially (vehicle-individual).<br> Examples: left,  right, straight, 433MHz.
-*rotationAllowed* |  | boolean | "true”: rotation is allowed on the segment.<br>"false”: rotation is not allowed on the segment.<br><br>可选:<br>No limit, if not set.
-*maxRotationSpeed* | rad/s | float64| Maximum rotation speed<br><br>可选:<br>No limit, if not set.
-***trajectory*** |  | JSON-object | Trajectory JSON-object for this segment as a NURBS. <br>Defines the curve, on which the AGV should move between startNode and endNode.<br><br>可选:<br>Can be omitted, if AGV cannot process trajectories or if AGV plans its own trajectory.
-*length* | m | float64 | Length of the path from startNode to endNode<br><br>可选:<br>This value is used by line-guided AGVs to decrease their speed before reaching a stop position. 
-**action [action]**<br><br><br> } |  | array | Array of actionIds to be executed on the segment. <br>Empty array, if no actions required. <br>An action triggered by an segment will only be active for the time that the AGV is traversing the segment which triggered the action. <br>When the AGV leaves the segment, the action will stop and the state before entering the segment will be restored.
+**segment** { |  | JSON-object | 两点之间的方向连接.
+edgeId |  | string | 片段的唯一标识.
+sequenceId |  | Integer | 跟踪任务中的点和段的顺序并简化任务更新. <br>>变量sequenceId在同一任务的所有点和段中运行,并在发出新的OrderID时重置.
+*edgeDescription* |  | string | 有关片段的其他信息.
+released |  | boolean | "true"表示该片段是base的一部分.<br>"false" 表示该片段是horizon的一部分. 
+startNodeId |  | string | nodeId起始.
+endNodeId |  | string | nodeId终点.
+*maxSpeed* | m/s | float64 | 允许在片段上的最大速度. <br>速度由车辆的最大测量定义.
+*maxHeight* | m | float64 | 允许车辆(包括负载)的车辆的最大高度.
+*minHeight* | m | float64 | 允许载货处理设备的最小高度.
+*orientation* | rad | float64 | AGV在片段上的方向. *orientationType*的值 定义它是否必须相对于全局项目特定地图坐标系或与线段相切进行解释.在与线段相切的情况下,0.0=向前,PI=向后<br>示例：方向Pi/2 rad将导致旋转90度 <br>如果AGV以不同的方向启动,如果rotationAllowed设置为"false",则该段上的车辆将旋转到所需的方向.<br>如果rotationAllowed为“false”,则在进入段之前旋转.<br>如果不可能,则拒绝该任务.<br><br>如果未定义轨迹,则将旋转应用于线段两个连接点之间的直接路径.<br>如果这个线段定义了轨迹,则将方向应用于轨迹. 
+*orientationType* |  | string | Enum {`GLOBAL`, `TANGENTIAL`}: <br>"GLOBAL"- 相对于全局特定地图坐标系;<br>"TANGENTIAL"- 切线.<br><br>如果未定义,默认值为 "TANGENTIAL".
+*direction* |  | string | 在连接处设置方向,以定义line引导或线引导车辆(车辆个体).<br> 例子: left,  right, straight, 433MHz.
+*rotationAllowed* |  | boolean | "true”: 允许在片段上旋转.<br>"false”: 不允许在片段上旋转.<br><br>可选:<br>如果未设置,无限制.
+*maxRotationSpeed* | rad/s | float64| 最大旋转速度<br><br>可选:<br>如果未设置,无限制.
+***trajectory*** |  | JSON-object | 轨迹 JSON-object for this segment as a NURBS. <br>定义曲线, AGV应在启动节点和端节之间移动.<br><br>可选:<br>如果AGV无法处理轨迹或AGV计划自己的轨迹,则可以省略.
+*length* | m | float64 | 从startnode到endnode的路径长度<br><br>可选:<br>line引导AGV使用此值在达到停止位置之前降低速度. 
+**action [action]**<br><br><br> } |  | array | 在该片段上执行的一系列动作. <br>空数组,如果不需要操作. <br>一个段触发的动作只能在AGV通过片段触发动作的段的时间内活跃. <br>当AGV离开片段时,该动作将停止,并且在进入片段之前将恢复状态.
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **trajectory** { |  | JSON-object |  
-degree |  | float64 | Range: [1 ... infinity]<br><br>Defines the number of control points that influence any given point on the curve. Increasing the degree increases continuity.<br><br>If not defined, the default value is 1.
-**knotVector [float64]** |  | array | Range: [ 0.0 ... 1.0]<br><br>Sequence of parameter values that determines where and how the control points affect the NURBS curve.<br><br>knotVector has size of number of control points + degree + 1.
-**controlPoints [controlPoint]**<br><br> } |  | array | List of JSON controlPoint objects defining the control points of the NURBS, which includes the beginning and end point.
+degree |  | float64 | 范围: [1 ... 无穷大]<br><br>定义影响曲线上任何给定点的控制点的数量. 提高度增加了连续性.<br><br>如果未定义,默认值为1.
+**knotVector [float64]** |  | array | 范围: [ 0.0 ... 1.0]<br><br>参数值的顺序确定控制点在何处以及如何影响NURBS曲线.<br><br>knotVector的大小为控制点数量+度+1.
+**controlPoints [controlPoint]**<br><br> } |  | array | JSON控制点对象的列表定义NURB的控制点,其中包括开始点和终点.
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **controlPoint** { |  | JSON-object |  
-x |  | float64 | X coordinate described in the world coordinate system. 
-y |  | float64 | Y coordinate described in the world coordinate system.actions
-*weight* |  | float64 | Range: (0 ... infinity)<br><br>The weight, with which this control point pulls on the curve.<br>When not defined, the default will be 1.0.
+x |  | float64 | X坐标在世界坐标系统中描述. 
+y |  | float64 | Y坐标在世界坐标系统中描述.actions
+*weight* |  | float64 | 范围: (0 ... 无穷)<br><br>该控制点在曲线上拉出pulls的weight .<br>如果未定义,默认值将为1.0.
 } |  |  |
 
 
@@ -755,8 +696,7 @@ AGV如果支持驾驶以外的其他actions,则这些actions将通过附加到�
 
 在段上执行的actions,仅限AGV在片段上运行时执行(请参见6.10.2).
 
-actions that are triggered on points can run as long as they need to run. 
-`在点上触发的actions,可以在AGV需要的时候执行.`
+在点上触发的actions,可以在AGV需要的时候执行.
 
 点上的actions应该是自动终止(完成)的(例如,蜂鸣器信号持续五秒钟或取货action,在取货后自动完成)或者成对设计(例如,AcivalateWarningLights和UnctivateWarninglights),尽管有可能存在.
 
@@ -870,17 +810,17 @@ AGV状态将仅在一个主题topic上传输.相比不同的消息 (例如, 针�
 ![Figure 12 任务信息由state topic提供. 仅传输最后一点和剩余点和段的ID](./assets/Figure12.png) 
 >Figure 12 任务信息由state topic提供. 仅传输最后一点和剩余点和段的ID
 
-### <a name="Tonaeletoa"></a> 6.10.2 遍历点和进入/离开片段,动作触发 
+### <a name="Tonaeletoa"></a> 6.10.2 途径点和进入/离开片段,动作触发 
 
 AGV自己判断一个点什么时候被计算为已经通过.通常,AGV控制点需要在 the node’s `deviationRangeXY` 并且方向角度在`deviationRangeTheta`.
 
-AGV上报遍历点通过从`nodeStates`数组移除`nodeState`并且设置`lastNodeId`, `lastNodeSequenceNumber`为遍历点的值;
+AGV上报途径点通过从`nodeStates`数组移除`nodeState`并且设置`lastNodeId`, `lastNodeSequenceNumber`为途径点的值;
 
-当AGV上报遍历点的时候,必须触发这个点设置的Actions,如果存在的情况;
+当AGV上报途径点的时候,必须触发这个点设置的Actions,如果存在的情况;
 
-点的遍历同样标志着离开指向点的片段.这个片段必须从`edgeStates`删除并且这个片段上激活的Actions必须完成;
+点的途径同样标志着离开指向点的片段.这个片段必须从`edgeStates`删除并且这个片段上激活的Actions必须完成;
 
-该点的遍历也标志着一个时刻, AGV进入记下来的片段,如果有一个片段的话,这个片段的Actions必须立即触发.这条规则里外的情况是,如果AGV在片段上暂停 (因为软停或者hard blocking segment,或者其他) – 然后AGV进入片段当它开始重新移动.
+该点的途径也标志着一个时刻, AGV进入记下来的片段,如果有一个片段的话,这个片段的Actions必须立即触发.这条规则里外的情况是,如果AGV在片段上暂停 (因为软停或者hard blocking segment,或者其他) – 然后AGV进入片段当它开始重新移动.
 
 ![Figure 13 nodeStates, edgeStates, actionStates 在任务处理过程中](./assets/Figure13.png)
 >Figure 13 nodeStates, edgeStates, actionStates 在任务处理过程中
@@ -952,18 +892,18 @@ edgeId |  | string | 段的唯一标识.
 sequenceId |  | uint32 | sequenceId(顺序id?)用来分辨同一个edgeId的多个片段.
 *edgeDescription* |  | string | 有关片段的其他信息.
 released |  | boolean | "true” 表示该段是base的一部分.<br>"false” 表示该段是horizon的一部分.
-***trajectory*** <br><br>} |  | JSON-object | 轨迹以NUBS曲线传递,在6.4定义<br><br>轨迹段是从AGV开始进入段的点,直到报告的下一个遍历点.
+***trajectory*** <br><br>} |  | JSON-object | 轨迹以NUBS曲线传递,在6.4定义<br><br>轨迹段是从AGV开始进入段的点,直到报告的下一个途径点.
 
 Object structure | Unit | Data type | Description
 ---|---|---|---
 **agvPosition** { |  | JSON-object | 定义世界坐标系中地图上的位置.每个楼层都有自己的地图.
 positionInitialized |  | boolean | "true”: 位置正在初始化.<br>"false”: 位置没有初始化.
-*localizationScore* |  | float64 | Range: [0.0 ... 1.0]<br><br>描述定位的质量,以便可以使用, 例如 被SLAM-AGV描述, 当前位置信息的准确程度.<br><br>0.0: 位置未知<br>1.0: 已知位置<br><br>可选 对于车辆无法估计其定位质量的.<br><br>仅用于记录和可视化目的. 
+*localizationScore* |  | float64 | 范围: [0.0 ... 1.0]<br><br>描述定位的质量,以便可以使用, 例如 被SLAM-AGV描述, 当前位置信息的准确程度.<br><br>0.0: 位置未知<br>1.0: 已知位置<br><br>可选 对于车辆无法估计其定位质量的.<br><br>仅用于记录和可视化目的. 
 *deviationRange* | m | float64 | 用米定义的位置偏差范围.<br><br>可选 对于无法估计其偏差的车辆 例如 grid-based 定位.<br><br>仅用于记录和可视化目的.
 x | m | float64 | 地图上的X位置坐标 参考地图坐标系. <br>精度取决于特定的实现(任务?).
 y | m | float64 | 地图上的Y位置坐标 参考地图坐标系. <br>精度取决于特定的实现(任务?).
-theta |  | float64 | Range: [-Pi ... Pi]<br><br>AGV的方向(弧度?). 
-mapId |  | string | 地图位移标识id,用来定位的.<br><br>每个地图具有相同的原始坐标. <br>当AGV使用电梯时, 例如, 从一个楼层到另一个楼层,它将小时在离开楼层的地图出现在目标楼层电梯点.
+theta |  | float64 | 范围: [-Pi ... Pi]<br><br>AGV的方向(弧度?). 
+mapId |  | string | 地图位移标识id,用来定位的.<br><br>每个地图具有相同的原始坐标. <br>当AGV使用电梯时, 例如, 从一个楼层到另一个楼层,它将消失在离开楼层的地图出现在目标楼层电梯点.
 *mapDescription*<br>} |  | string | 地图上的其他信息. 
 
 Object structure | Unit | Data type | Description 
@@ -1010,7 +950,7 @@ actionStatus |  | string | Enum {WAITING; INITIALIZING; RUNNING; PAUSED; FINISHE
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **batteryState** { |  | JSON-object |  
-batteryCharge | % | float64 | 充电状态: <br> 如果AGV仅提供好或差电池水平的值,则将这些值表示为20％（差）和80％（好）. 
+batteryCharge | % | float64 | 充电状态: <br> 如果AGV仅提供好或差电池水平的值,则将这些值表示为20％(差)和80％(好). 
 *batteryVoltage* | V | float64 | 电池电压.
 *batteryHealth* | % | int8 | 范围: [0 .. 100]<br><br>健康状况. 
 charging |  | boolean | "true”: 正在充电中.<br>"false”: AGV目前不充电.
@@ -1148,7 +1088,7 @@ connectionState | string | Enum {`ONLINE`, `OFFLINE`, `CONNECTIONBROKEN`}<br><br
 如果连接意外中断,则仅由broker发送最后一条will消息.
 
 **注意**: 由于MQTT中最后一个will功能的性质, 最后一条will消息 是在AGV和MQTT broker之间连接阶段 定义的.
-结果，时间戳和headerld字段将始终过期.
+结果,时间戳和headerld字段将始终过期.
 
 AGV希望优雅地断开连接: 
 
@@ -1160,7 +1100,7 @@ AGV上线:
 1. 将最后一个will设置为 "uagv/v2/manufacturer/SN/connection" 包含字段`connectionState`且设置`CONNECTIONBROKEN`, 当创建MQTT连接时.
 2. 发送主题 "uagv/v2/manufacturer/SN/connection" 包含 `connectionState` 设置`ONLINE`.
 
-该主题上的所有消息均应带有保留标志。
+该主题上的所有消息均应带有保留标志.
 
 当AGV和broker之间的连接意外停止时, broker将发送最后一个will主题: "uagv/v2/manufacturer/SN/connection" 包含字段`connectionState`,且设置 `CONNECTIONBROKEN`.
 
@@ -1207,7 +1147,7 @@ This JSON object 描述AGV类型的一般特性.
 | agvClass            | string          | 简化的AGV类描述.<br/>[FORKLIFT, CONVEYOR, TUGGER, CARRIER]<br/>FORKLIFT: 叉车.<br/>CONVEYOR: 带有输送机的AGV.</br>TUGGER: 拖车.<br/>CARRIER: 货物 carrier 有或者没有顶升机构. |
 | maxLoadMass         | float64         | [kg], 最大负荷质量. |
 | localizationTypes   | Array of String  | 定位类型的简化描述.<br/>示例值:<br/>NATURAL: 自然地标;<br/>REFLECTOR: 激光反射器;<br/>RFID: RFID-tags;<br/>DMC: data matrix code;<br/>SPOT: magnetic spots;<br/>GRID: magnetic grid.<br/>
-| navigationTypes     | Array of String | AGV支持的路径规划类型列表,按优先级排序.<br/>示例值:<br/>PHYSICAL_LINE_GUIDED: 没有路径规划, AGV跟踪物理安装的路径.<br/>VIRTUAL_LINE_GUIDED: AGV行走固定（虚拟）路径.<br/>AUTONOMOUS: AGV自动规划其路径.|
+| navigationTypes     | Array of String | AGV支持的路径规划类型列表,按优先级排序.<br/>示例值:<br/>PHYSICAL_LINE_GUIDED: 没有路径规划, AGV跟踪物理安装的路径.<br/>VIRTUAL_LINE_GUIDED: AGV行走固定(虚拟)路径.<br/>AUTONOMOUS: AGV自动规划其路径.|
 
 #### physicalParameters
 
@@ -1249,8 +1189,8 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | &emsp;*instantactions*              | uint32        | 每条消息AGV可以处理的最大立即动作数量. |
 | &emsp;*trajectory.knotVector*       | uint32        | AGV可处理的每个轨迹的最大结数knots. |
 | &emsp;*trajectory.controlPoints*    | uint32        | AGV可处理的每个轨迹的最大控制点数. |
-| &emsp;*state.nodeStates*            | uint32        | AGV发送的最大nodeStates数，AGV base中的最大点数. |
-| &emsp;*state.edgeStates*            | uint32        | AGV发送的最大edgeStates数，AGV base中的最大片段数. |
+| &emsp;*state.nodeStates*            | uint32        | AGV发送的最大nodeStates数,AGV base中的最大点数. |
+| &emsp;*state.edgeStates*            | uint32        | AGV发送的最大edgeStates数,AGV base中的最大片段数. |
 | &emsp;*state.loads*                 | uint32        | AGV发送的最大负载对象load-objects数.                |
 | &emsp;*state.actionStates*          | uint32        | AGV发送的最大actionStates数.                |
 | &emsp;*state.errors*                | uint32        | AGV在一个state消息中发送的最大错误数量. |
@@ -1261,13 +1201,13 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | **timing** {                  | JSON-object   | Timing information.                                            |
 | &emsp;minOrderInterval              | float32       | [s], 将任务消息发送到AGV最小间隔时间.        |
 | &emsp;minStateInterval              | float32       | [s], 发送state-messages的最小间隔.               |
-| &emsp;*defaultStateInterval*        | float32       | [s], 发送state-messages的默认间隔, *如果未定义，则使用主文档的默认值*. |
+| &emsp;*defaultStateInterval*        | float32       | [s], 发送state-messages的默认间隔, *如果未定义,则使用主文档的默认值*. |
 |  &emsp;*visualizationInterval*      | float32       | [s], 用于发送可视化主题消息的默认间隔.       |
 | }                             |               |                                                               |
 
 #### agvProtocolFeatures
 
-该JSON对象定义了由AGV支持的 操作action和参数parameter。
+该JSON对象定义了由AGV支持的 操作action和参数parameter.
 
 | **Field**    | **data type** | **description**  |
 |--------------|---------------|------------------|
@@ -1282,7 +1222,7 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | &emsp;actionType   | string        | 唯一actionType 与action.actionType一致. |
 | &emsp;*actionDescription* | string  | 任意形式文字: action描述. |
 | &emsp;actionscopes | array of enum  | 使用此允许的范围列表action-type.<br/><br/>INSTANT: 可用作为立即.<br/>point: 可在点上使用.<br/>segment: 可在片段上使用.<br/><br/>例如: ```["INSTANT", "NODE"]```|
-| &emsp;***actionParameters** [**actionParameter**]* | JSON-object数组 | 参数列表<br/>如果未定义，则该动作没有参数 |
+| &emsp;***actionParameters** [**actionParameter**]* | JSON-object数组 | 参数列表<br/>如果未定义,则该动作没有参数 |
 |&emsp;*{*     |               |                  |
 |&emsp;&emsp;key     | string        | Key-String for 参数. |
 |&emsp;&emsp;valueDataType | enum    | 数据类型, 可能的数据类型是: BOOL, NUMBER, INTEGER, FLOAT, STRING, OBJECT, ARRAY. |
@@ -1310,13 +1250,13 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | &emsp;}                                    |                      |                                                        |
 | &emsp;diameter                             | float64              | [m], 车轮直径.                          |
 | &emsp;width                                | float64              | [m], 车轮宽度.                             |
-| &emsp;*centerDisplacement*                 | float64              | [m], 车轮中心到旋转点的位移 (caster wheels必要).<br/> 如果未定义参数，则假定为0.            |
+| &emsp;*centerDisplacement*                 | float64              | [m], 车轮中心到旋转点的位移 (caster wheels必要).<br/> 如果未定义参数,则假定为0.            |
 | &emsp;*constraints*                        | string               | 任意形式文字: 制造商可以用来定义约束. |
 | }                                    |                      |                                                        |
 | ***envelopes2d** [**envelope2d**]*   | JSON-object数组  | 2D下的AGV-包络曲线列表(german: "Hüllkurven"), 例如, 机械包络在载货和不载货状态, 不同速度的安全防护. |
 | {                                    |                      |                                                        |
 | &emsp;set                             | string               | 包络曲线集合数量.                         |
-| &emsp;**polygonPoints**  **[polygonPoint]**         | JSON-object数组  | 包络曲线 X/Y-Polygon多边形预期是封闭的，必须是非自交的. |
+| &emsp;**polygonPoints**  **[polygonPoint]**         | JSON-object数组  | 包络曲线 X/Y-Polygon多边形预期是封闭的,必须是非自交的. |
 | &emsp;{                                    |                      |                                                        |
 |&emsp;&emsp; x                              | float64              | [m], 多边形点的x位置.                        |
 |&emsp;&emsp; y                              | float64              | [m], 多边形点的y位置.                        |
@@ -1384,7 +1324,7 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 
 ## <a name="Fop"></a> 7.2 Format of parameters 
 
-错误，信息，操作(errors, information, action)的参数被设计为带有键值对 的JSON-Objects数组。
+错误,信息,操作(errors, information, action)的参数被设计为带有键值对 的JSON-Objects数组.
 动作参数的"someaction”带有键值对 stationType和loadType的例子:
 
 ``
