@@ -10,9 +10,9 @@
 
 2. automated guided vehicles -> AGV
 
-3. node -> point 点
+3. node -> point(原文档没有point,如果出现point可以看做是node) 点
 
-4. edge -> segment 片段(直线 弧线)
+4. edge -> segment(原文档没有segment,如果出现segment可以看做是edge) 片段(直线 弧线)
 
 
 
@@ -605,8 +605,6 @@ X,Y和Z坐标必须为米.方向必须为弧度,并且必须在 +pi和–pi内.
 >图11地图和车辆的坐标系
 
 
-> 校对到此 2022年8月30日 22:08:28
-
 ## <a name="Iotom"></a> 6.7 任务消息的实施
 
 Object structure | Unit | Data type | Description 
@@ -616,18 +614,18 @@ timestamp | | string | 日期时间 (ISO 8601, UTC); YYYY-MM-DDTHH:mm:ss.ssZ (�
 version | | string | 协议版本 [Major].[Minor].[Patch] (例如, 1.3.2).
 manufacturer | | string | AGV厂商. 
 serialNumber | | string | AGV序列号.
-Actions [action] | | array | 需要立即执行的动作组并且不是常规任务重的一部分. 
-orderId |  | string | 任务标识.<br> 这将用于识别属于同一任务的多个任务消息. 
-orderUpdateId |  | uint32 | 任务更新标识.<br>每个orderId是唯一的.<br>如果更新任务被拒绝,则将在拒绝消息中传递此字段
+Actions [action] | | array | 需要立即执行的动作组并且不是常规任务中的一部分. 
+orderId |  | string | 任务标识id.<br> 这将用于识别属于同一任务的多个任务消息. 
+orderUpdateId |  | uint32 | 任务更新标识id.<br>对于每个orderId是orderUpdateId唯一的.<br>如果更新任务被拒绝,则将在拒绝消息中传递此orderUpdateId
 zoneSetId |  | string | 区域集的唯一标识符, AGV用于导航或RCS用于规划. <br> <br> 可选:一些RCS系统不使用区域.<br> 一些AGV不了解区域.<br> 如果没有区域使用,请勿添加到任务消息. 
-**points [point]** |  | array | 任务内要途径的点对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表. 
-**segments [segment]** |  | array | 任务内要途径的片段对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表.
+**points [point]** |  | array | 任务内要途径的点node对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表. 
+**segments [segment]** |  | array | 任务内要途径的片段edge对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表.
 
 Object structure | Unit | Data type | Description
 ---|---|---|---
 **point** { |  | JSON-object|   
 nodeId |   |  string | 唯一的点标识
-sequenceId |  | uint32 | 跟踪任务中的点和段的顺序并简化任务更新. <br>主要目的是区分一个点,该点在一个orderid中不止一次出现. <br>变量sequenceId在同一任务的所有点和段中运行,并在发出新的OrderID时重置.
+sequenceId |  | uint32 | 跟踪任务中的点和段的顺序并简化任务更新. <br>主要目的是区分一个点,该点在一个orderid中可能不止一次出现. <br>sequenceId在同一任务的所有点和段中运行,并在发出新的orderID时重置.
 *nodeDescription* |  | string | 有关该点的其他信息 
 released |  | boolean | "true" 表示该点是base的一部分. <br> "false" 表示该点是horizon的一部分. 
 ***nodePosition*** |  | JSON-object | 点位置. <br>可选 对于不需要点位置的车辆类型(例如, line制导车辆).
@@ -638,7 +636,7 @@ Object structure | Unit | Data type | Description
 **nodePosition** { |  | JSON-object | 在世界坐标系中定义地图上的位置. <br>每个楼层都有自己的地图. <br>All maps must use the same project specific global origin. 
 x | m | float64 | 地图上的X位置参考地图坐标系. <br>精度取决于特定的实现. 
 y | m | float64 | 地图上的Y位置参考地图坐标系. <br>精度取决于特定的实现. 
-*theta* | rad | float64 | 范围: [-Pi ... Pi] <br><br>AGV的绝对方向.<br> 可选: 车辆可以自己计划路径.<br>如果定义,AGV必须在此点达到theta角度.<br>如果以前的段不允许旋转,则AGV必须在点上旋转.<br>如果接下来的段定义了不同的方向并且段禁止旋转,则AGV需要在段的起点上旋转到所需的角度.
+*theta* | rad | float64 | 范围: [-Pi ... Pi] <br><br>AGV的绝对方向.<br> 可选: 车辆可以自己规划路径.<br>如果定义,AGV必须在此点达到theta角度.<br>如果以前的段不允许旋转,则AGV必须在点上旋转.<br>如果接下来的段定义了不同的方向并且段禁止旋转,则AGV需要在段的起点上旋转到所需的角度.
 *allowedDeviationXY* |  | float64 | 指示AGV在任务中如何认为点已经通过. <br><br> If = 0: 不允许偏差 (没有偏差意味着在AGV制造商的正常偏差范围内). <br><br> If > 0: 允许偏离(米). <br>如果AGV在经过点的时候在deviation-radius内,则认为该点已被途径.
 *allowedDeviationTheta* |  | float64 | 范围: [0 ... Pi] <br><br> 指示theta角度的偏差有多大. <br>最低可接受的角度是theta-allowedDeviationTheta,最高可接受的角度是theta +allowedDeviationTheta.
 mapId |  | string | 位置所在地图的唯一标识. <br> 每张地图具有相同的项目特定的全局原始坐标. <br>当AGV使用电梯时, 例如, 从一个楼层到另一个楼层,它将消失在离开楼层的地图出现在目标楼层电梯点.
@@ -647,17 +645,17 @@ mapId |  | string | 位置所在地图的唯一标识. <br> 每张地图具有�
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **action** { |  | JSON-object | 描述AGV可以执行的动作. 
-actionType |  | string | Name of action as described in the first column of "actions and Parameters”. <br> Identifies the function of the action. 
-actionId |  | string | Unique ID to identify the action and map them to the actionstate in the state. <br>Suggestion: Use UUIDs.
-*actionDescription* |  | string | Additional information on the action
-blockingType |  | string | Enum {NOTE, SOFT, HARD}: <br> "NONE"- allows driving and other actions;<br>"SOFT"- allows other actions, but not driving;<br>"HARD"- is the only allowed action at that time.
-***actionParameters [actionParameter]*** <br><br> } |  | array | Array of actionParameter-objects for the indicated action, 例如, deviceId, loadId, external Triggers. <br><br> See "actions and Parameters"
+actionType |  | string |行动名称，如第一列中所述"actions and Parameters”. <br>标识动作的功能. 
+actionId |  | string | 唯一ID用来识别动作,并将其映射到state中的actionstate. <br>建议: 使用 UUIDs.
+*actionDescription* |  | string | 有关动作的其他信息
+blockingType |  | string | Enum {NOTE, SOFT, HARD}: <br> "NONE"- 允许行驶中执行和其他动作;<br>"SOFT"- 允许其他动作，但不能在行驶中执行;<br>"HARD"-是当时唯一允许的动作.
+***actionParameters [actionParameter]*** <br><br> } |  | array | 对于指定的动作的actionParameter-objects组, 例如, deviceId, loadId, external Triggers. <br><br> 查看 "actions and Parameters"
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **segment** { |  | JSON-object | 两点之间的方向连接.
 edgeId |  | string | 片段的唯一标识.
-sequenceId |  | Integer | 跟踪任务中的点和段的顺序并简化任务更新. <br>>变量sequenceId在同一任务的所有点和段中运行,并在发出新的OrderID时重置.
+sequenceId |  | Integer | 跟踪任务中的点和段的顺序并简化任务更新. <br>sequenceId在同一任务的所有点和段中运行,并在发出新的orderID时重置.
 *edgeDescription* |  | string | 有关片段的其他信息.
 released |  | boolean | "true"表示该片段是base的一部分.<br>"false" 表示该片段是horizon的一部分. 
 startNodeId |  | string | nodeId起始.
@@ -677,7 +675,7 @@ endNodeId |  | string | nodeId终点.
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **trajectory** { |  | JSON-object |  
-degree |  | float64 | 范围: [1 ... 无穷大]<br><br>定义影响曲线上任何给定点的控制点的数量. 提高度增加了连续性.<br><br>如果未定义,默认值为1.
+degree |  | float64 | 范围: [1 ... 无穷大]<br><br>定义影响曲线上任何给定点的控制点的数量. 提高增加连续性.<br><br>如果未定义,默认值为1.
 **knotVector [float64]** |  | array | 范围: [ 0.0 ... 1.0]<br><br>参数值的顺序确定控制点在何处以及如何影响NURBS曲线.<br><br>knotVector的大小为控制点数量+度+1.
 **controlPoints [controlPoint]**<br><br> } |  | array | JSON控制点对象的列表定义NURB的控制点,其中包括开始点和终点.
 
@@ -707,6 +705,7 @@ AGV如果支持驾驶以外的其他actions,则这些actions将通过附加到�
 
 如果无法将某些action映射到以下部分的actions之一,则AGV制造商可以定义RCS必须使用的其他actions.
 
+> 校准 2022年8月31日 09:22:02
 
 ### <a name="Padtpeas"></a> 6.8.1 预定义action 定义, 参数, 效果 和 范围
 
@@ -1015,7 +1014,7 @@ TEACHIN | RCS不控制AGV. <br>管理者不会将驾驶任务或动作发送到A
 
 actionStatus | Description 
 ---|---
-WAITING | AGV接收到动作,单数AGV没有到达触发的点或者没有进入激活的片段.
+WAITING | AGV接收到动作,但是AGV没有到达触发的点或者没有进入激活的片段.
 INITIALIZING | 动作触发, 启动准备措施.
 RUNNING | 动作正在运行.
 PAUSED | 由于立即动作或外部触发(AGV上的暂停按钮),该动作被暂停 
@@ -1040,7 +1039,7 @@ FAILED | 无论出于何种原因,都无法完成动作.
 
 actionStatus | Description 
 ---|---
-NONE | 行动可以与其他动作并行执行,可以在车辆行驶时执行.
+NONE | 动作可以与其他动作并行执行,可以在车辆行驶时执行.
 SOFT | 动作可以与其他动作并行执行,不能在车辆行驶中执行.
 HARD | 不得与其他动作并行执行操作. 不能在车辆行驶中执行.
 
