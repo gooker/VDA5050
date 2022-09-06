@@ -322,7 +322,7 @@ MQTT协议提供了为客户端设置最后一个will消息的选项.
 ## <a name="MTL"></a> 6.3 MQTT-Topic 级别 
 
 由于云提供商的强制性主题结构,MQTT主题结构并未严格定义.
-对于基于云的MQTT-BROKR,必须单独调整主题结构以匹配此协议中定义的主题. 
+对于基于云的MQTT-BROKER,必须单独调整主题结构以匹配此协议中定义的主题. 
 这意味着以下各节中定义的主题名称是强制性的.
 
 对于本地broker,建议MQTT主题级别如下：
@@ -677,7 +677,7 @@ Object structure | Unit | Data type | Description
 **trajectory** { |  | JSON-object |  
 degree |  | float64 | 范围: [1 ... 无穷大]<br><br>定义影响曲线上任何给定点的控制点的数量. 提高增加连续性.<br><br>如果未定义,默认值为1.
 **knotVector [float64]** |  | array | 范围: [ 0.0 ... 1.0]<br><br>参数值的顺序确定控制点在何处以及如何影响NURBS曲线.<br><br>knotVector的大小为控制点数量+度+1.
-**controlPoints [controlPoint]**<br><br> } |  | array | JSON控制点对象的列表定义NURB的控制点,其中包括开始点和终点.
+**controlPoints [controlPoint]**<br><br> } |  | array | JSON控制点对象的列表定义NURBS的控制点,其中包括开始点和终点.
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
@@ -1041,7 +1041,7 @@ actionStatus | Description
 ---|---
 NONE | 动作可以与其他动作并行执行,可以在车辆行驶时执行.
 SOFT | 动作可以与其他动作并行执行,不能在车辆行驶中执行.
-HARD | 不得与其他动作并行执行操作. 不能在车辆行驶中执行.
+HARD | 不得与其他动作并行执行操作,不能在车辆行驶中执行.
 
 >表2动作阻塞类型
 
