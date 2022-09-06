@@ -10,12 +10,6 @@
 
 2. automated guided vehicles -> AGV
 
-3. node -> point(原文档没有point,如果出现point可以看做是node) 点
-
-4. edge -> segment(原文档没有segment,如果出现segment可以看做是edge) 片段(直线 弧线)
-
-
-
 ![RCS和自动导向车辆](./assets/csagv.png) 
 
 
@@ -445,14 +439,14 @@ RCS有可能更改“Horizon”路线. 在AGV通过“base”路线到达决策�
 {
 	orderId: "1234"
 	orderUpdateId:0,
-	points: [
+	nodes: [
 	 	 6 {released: True},
 	 	 4 {released: True},
 	 	 7 {released: True},
 	 	 2 {released: False},
 	 	 8 {released: False}
 	],
-	segments: [
+	edges: [
 		e1 {released: True},
 		e3 {released: True},
 		e8 {released: False},
@@ -471,13 +465,13 @@ RCS有可能更改“Horizon”路线. 在AGV通过“base”路线到达决策�
 }
 	orderId: 1234,
 	orderUpdateId: 1,
-	points: [
+	nodes: [
 		7 {released: True},
 		2 {released: True},
 		8 {released: True},
 		9 {released: False}
 	],
-	segments: [
+	edges: [
 		e8 {released: True},
 		e9 {released: True},
 		e10 {released: False}
@@ -618,12 +612,12 @@ Actions [action] | | array | 需要立即执行的动作组并且不是常规任
 orderId |  | string | 任务标识id.<br> 这将用于识别属于同一任务的多个任务消息. 
 orderUpdateId |  | uint32 | 任务更新标识id.<br>对于每个orderId是orderUpdateId唯一的.<br>如果更新任务被拒绝,则将在拒绝消息中传递此orderUpdateId
 zoneSetId |  | string | 区域集的唯一标识符, AGV用于导航或RCS用于规划. <br> <br> 可选:一些RCS系统不使用区域.<br> 一些AGV不了解区域.<br> 如果没有区域使用,请勿添加到任务消息. 
-**points [point]** |  | array | 任务内要途径的点node对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表. 
-**segments [segment]** |  | array | 任务内要途径的片段edge对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表.
+**nodes [node]** |  | array | 任务内要途径的点node对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表. 
+**edges [edge]** |  | array | 任务内要途径的片段edge对象数组. <br>有效任务可能只有一个点. <br>该情况使用空白的片段列表.
 
 Object structure | Unit | Data type | Description
 ---|---|---|---
-**point** { |  | JSON-object|   
+**node** { |  | JSON-object|   
 nodeId |   |  string | 唯一的点标识
 sequenceId |  | uint32 | 跟踪任务中的点和段的顺序并简化任务更新. <br>主要目的是区分一个点,该点在一个orderid中可能不止一次出现. <br>sequenceId在同一任务的所有点和段中运行,并在发出新的orderID时重置.
 *nodeDescription* |  | string | 有关该点的其他信息 
@@ -653,7 +647,7 @@ blockingType |  | string | Enum {NOTE, SOFT, HARD}: <br> "NONE"- 允许行驶中
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
-**segment** { |  | JSON-object | 两点之间的方向连接.
+**edge** { |  | JSON-object | 两点之间的方向连接.
 edgeId |  | string | 片段的唯一标识.
 sequenceId |  | Integer | 跟踪任务中的点和段的顺序并简化任务更新. <br>sequenceId在同一任务的所有点和段中运行,并在发出新的orderID时重置.
 *edgeDescription* |  | string | 有关片段的其他信息.
@@ -668,7 +662,7 @@ endNodeId |  | string | nodeId终点.
 *direction* |  | string | 在连接处设置方向,以定义line引导或线引导车辆(车辆个体).<br> 例子: left,  right, straight, 433MHz.
 *rotationAllowed* |  | boolean | "true”: 允许在片段上旋转.<br>"false”: 不允许在片段上旋转.<br><br>可选:<br>如果未设置,无限制.
 *maxRotationSpeed* | rad/s | float64| 最大旋转速度<br><br>可选:<br>如果未设置,无限制.
-***trajectory*** |  | JSON-object | 轨迹 JSON-object for this segment as a NURBS. <br>定义曲线, AGV应在启动节点和端节之间移动.<br><br>可选:<br>如果AGV无法处理轨迹或AGV计划自己的轨迹,则可以省略.
+***trajectory*** |  | JSON-object | 轨迹 JSON-object for this edge as a NURBS. <br>定义曲线, AGV应在启动节点和端节之间移动.<br><br>可选:<br>如果AGV无法处理轨迹或AGV计划自己的轨迹,则可以省略.
 *length* | m | float64 | 从startnode到endnode的路径长度<br><br>可选:<br>line引导AGV使用此值在达到停止位置之前降低速度. 
 **action [action]**<br><br><br> } |  | array | 在该片段上执行的一系列动作. <br>空数组,如果不需要操作. <br>一个段触发的动作只能在AGV通过片段触发动作的段的时间内活跃. <br>当AGV离开片段时,该动作将停止,并且在进入片段之前将恢复状态.
 
@@ -711,10 +705,10 @@ AGV如果支持驾驶以外的其他actions,则这些actions将通过附加到�
 
 general |  | scope 
 :---:|--- | :---:
-action, counter action, Description, idempotent, Parameter | linked state |  instant, point, segment 
+action, counter action, Description, idempotent, Parameter | linked state |  instant, node, edge 
 action,counter action,描述,幂等,参数| 链接状态| 即时(立即),点,片段
 
-action | counter action | Description | idempotent | Parameter | linked state | instant | point | segment
+action | counter action | Description | idempotent | Parameter | linked state | instant | node | edge
 ---|---|---|---|---|---|---|---|---
 startPause | stopPause | 激活暂停模式. <br>连接状态是必须的,因为很多AGVs可以被硬件开关暂停. <br>AGV不继续运动 - 到下一个点不是必须的.<br>actions可以继续. <br>task是可以恢复的. | yes | - | paused | yes | no | no 
 stopPause | startPause | 停用暂停模式. <br>移动和所有其他actions将恢复 (如果有的话).<br>连接状态是必须的,因为很多AGVs可以被硬件开关暂停. <br>stopPause可以恢复硬件触发的停止车辆(例如软停)(如果配置). | yes | - | paused | yes | no | no 
@@ -726,7 +720,7 @@ logReport | - | 请求AGV生成和存储日志报告. | yes | reason<br>(string)
 pick | drop<br><br>(如果自动化) | 请求AGV取货. <br>带有多个负载处理设备的AGV可以并行处理多个取货操作. <br>在这种情况下,需要存在参数LHD (例如. LHD1). <br>参数stationType 说明如何详细处理取货操作 (例如, 楼层位置, 货架位置, 被动输送机, 主动输送机, 等等.). <br>load type 展示load unit 并且可以用来切换field 例如 (例如, EPAL, INDU, 等等). <br>用于准备负载处理设备 (例如, 基于高度参数的提升前动作), 动作(action)可以在horizon高级项里定义. <br>注意, 提升前动作(pre-Lift)等, 不会再AGV运行中上报,因为关联点尚未释放.<br>如果车辆在一个片段上,可以使用它自己的传感器设备检测取货点的位置. | no |lhd (string, 可选)<br>stationType (string)<br>stationName(string, 可选)<br>loadType (string) <br>loadId(string, 可选)<br>height (float64) (可选)<br>定义货物底部高度related to the floor<br>depth (float64) (可选) for forklifts<br>side(string) (可选) 例如 conveyor | .load | no | yes | yes 
 drop | pick<br><br>(如果自动化) | 请求AGV放货. <br>更多细节查看取货action. | no | lhd (string, 可选)<br>stationType (string, 可选)<br>stationName (string, 可选)<br>loadType (string, 可选)<br>loadId(string, 可选)<br>height (float64, 可选)<br>depth (float64, 可选) <br>… | .load | no | yes | yes
 detectObject | - | AGV检测对象(例如 货物, 充电点, 自由停车位置). | yes | objectType(string, 可选) | - | no | yes | yes 
-finePositioning<br>精准寻迹(上线) | - | 对于站点, AGV将精确寻迹到目标点.<br>AGV允许偏离点位置.<br>对于片段, AGV will 例如 align on stationary equipment while traversing an segment.<br>Instantaction: AGV starts positioning exactly on a target. | yes | stationType(string, 可选)<br>stationName(string, 可选) | - | no | yes | yes
+finePositioning<br>精准寻迹(上线) | - | 对于站点, AGV将精确寻迹到目标点.<br>AGV允许偏离点位置.<br>对于片段, AGV will 例如 align on stationary equipment while traversing an edge.<br>Instantaction: AGV starts positioning exactly on a target. | yes | stationType(string, 可选)<br>stationName(string, 可选) | - | no | yes | yes
 waitForTrigger | - | AGV需要等待触发信号(例如按压按钮,手动装货). <br>如果需要,RCS负责处理超时和取消任务. | yes | triggerType(string) | - | no | yes | no 
 cancelOrder | - | AGV应尽可能停止. <br>需要立即执行或者到下一个点. <br>然后任务删除,所有actions取消. | yes | - | - | yes | no | no 
 factsheetRequest | - | 请求AGV资料单factsheet | yes | - | - | yes | no | no 
@@ -819,7 +813,7 @@ AGV上报途径点通过从`nodeStates`数组移除`nodeState`并且设置`lastN
 
 点的途径同样标志着离开指向点的片段.这个片段必须从`edgeStates`删除并且这个片段上激活的Actions必须完成;
 
-该点的途径也标志着一个时刻, AGV进入记下来的片段,如果有一个片段的话,这个片段的Actions必须立即触发.这条规则里外的情况是,如果AGV在片段上暂停 (因为软停或者hard blocking segment,或者其他) – 然后AGV进入片段当它开始重新移动.
+该点的途径也标志着一个时刻, AGV进入记下来的片段,如果有一个片段的话,这个片段的Actions必须立即触发.这条规则里外的情况是,如果AGV在片段上暂停 (因为软停或者hard blocking edge,或者其他) – 然后AGV进入片段当它开始重新移动.
 
 ![Figure 13 nodeStates, edgeStates, actionStates 在任务处理过程中](./assets/Figure13.png)
 >Figure 13 nodeStates, edgeStates, actionStates 在任务处理过程中
@@ -1006,7 +1000,7 @@ TEACHIN | RCS不控制AGV. <br>管理者不会将驾驶任务或动作发送到A
 
 ## <a name="actionStates"></a> 6.11 actionStates
 
-当AGV接收到`action` (不论是关联在`point`或者`segment`或者通过`instantaction`), 必须将`action`反馈在`actionstate` 在`actionStates`组里.
+当AGV接收到`action` (不论是关联在`node`或者`edge`或者通过`instantaction`), 必须将`action`反馈在`actionstate` 在`actionStates`组里.
 
 `actionStates` 在字段`actionStatus`中描述了动作生命周期的哪个阶段.
 
@@ -1174,16 +1168,16 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | &emsp;*msgLen*                      | uint32        | 最大MQTT消息长度                 |
 | &emsp;*topicSerialLen*              | uint32        | MQTT-Topics中serial-number的最大长度.<br/><br/>受影响的参数:<br/>task.serialNumber<br/>instantactions.serialNumber<br/>state.SerialNumber<br/>visualization.serialNumber<br/>connection.serialNumber   |
 | &emsp;*topicElemLen*                | uint32        | MQTT-Topics中所有其他部分的最大长度.<br/><br/>受影响的参数:<br/>task.timestamp<br/>task.version<br/>task.manufacturer<br/>instantactions.timestamp<br/>instantactions.version<br/>instantactions.manufacturer<br/>state.timestamp<br/>state.version<br/>state.manufacturer<br/>visualization.timestamp<br/>visualization.version<br/>visualization.manufacturer<br/>connection.timestamp<br/>connection.version<br/>connection.manufacturer |
-| &emsp;*idLen*                       | uint32        | ID-Strings的最大长度.<br/><br/>受影响的参数:<br/>task.orderId<br/>task.zoneSetId<br/>point.nodeId<br/>nodePosition.mapId<br/>action.actionId<br/>segment.edgeId<br/>segment.startNodeId<br/>segment.endNodeId |
+| &emsp;*idLen*                       | uint32        | ID-Strings的最大长度.<br/><br/>受影响的参数:<br/>task.orderId<br/>task.zoneSetId<br/>node.nodeId<br/>nodePosition.mapId<br/>action.actionId<br/>edge.edgeId<br/>edge.startNodeId<br/>edge.endNodeId |
 | &emsp;*idNumericalOnly*             | boolean          | If "true" ID-strings 需要仅包含数字. |
-| &emsp;*enumLen*                     | uint32        | 最大长度ENUM- and Key-Strings.<br/><br/>受影响的参数:<br/>action.actionType action.blockingType<br/>segment.direction<br/>actionParameter.key<br/>state.operatingMode<br/>load.loadPosition<br/>load.loadType<br/>actionstate.actionStatus<br/>error.errorType<br/>error.errorLevel<br/>errorReference.referenceKey<br/>info.infoType<br/>info.infoLevel<br/>safetyState.eStop<br/>connection.connectionState                                               |
+| &emsp;*enumLen*                     | uint32        | 最大长度ENUM- and Key-Strings.<br/><br/>受影响的参数:<br/>action.actionType action.blockingType<br/>edge.direction<br/>actionParameter.key<br/>state.operatingMode<br/>load.loadPosition<br/>load.loadType<br/>actionstate.actionStatus<br/>error.errorType<br/>error.errorLevel<br/>errorReference.referenceKey<br/>info.infoType<br/>info.infoLevel<br/>safetyState.eStop<br/>connection.connectionState                                               |
 | &emsp;*loadIdLen*                   | uint32        | 最大长度loadId Strings |
 | }                             |               |                                  |
 | **maxArrayLens** {            | JSON-object   | 最大数组长度.                                 |
-| &emsp;*task.points*                 | uint32        | AGV每个任务可处理的的最大点数.  |
-| &emsp;*task.segments*                 | uint32        | AGV每个任务可处理的的最大片段数.  |
-| &emsp;*point.actions*                | uint32        | AGV每个点可处理的的最大actions数. |
-| &emsp;*segment.actions*                | uint32        | AGV每个片段可处理的的最大actions数. |
+| &emsp;*task.nodes*                 | uint32        | AGV每个任务可处理的的最大点数.  |
+| &emsp;*task.edges*                 | uint32        | AGV每个任务可处理的的最大片段数.  |
+| &emsp;*node.actions*                | uint32        | AGV每个点可处理的的最大actions数. |
+| &emsp;*edge.actions*                | uint32        | AGV每个片段可处理的的最大actions数. |
 | &emsp;*actions.actionsParameters*   | uint32        | AGV每个操作可处理的最大参数个数. |
 | &emsp;*instantactions*              | uint32        | 每条消息AGV可以处理的最大立即动作数量. |
 | &emsp;*trajectory.knotVector*       | uint32        | AGV可处理的每个轨迹的最大结数knots. |
@@ -1212,7 +1206,7 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 |--------------|---------------|------------------|
 | **optionalParameters** [**optionalParameter**] | JSON-object数组 | 支持和/或必须的 可选参数列表.<br/>此处未列出的可选参数,假定AGV不支持这些参数. |
 | {            |               |                  |
-| &emsp;parameter    | string        | 可选参数的全名, 例如 "*task.points.nodePosition.allowedDeviationTheta”*.|
+| &emsp;parameter    | string        | 可选参数的全名, 例如 "*task.nodes.nodePosition.allowedDeviationTheta”*.|
 | &emsp;support      | enum      | 可选参数支持的类型, 以下值是可能的:<br/>SUPPORTED: 可选参数像指定的一样支持.<br/>REQUIRED: 可选 适当的AGV操作需要参数. |
 | &emsp;*description*| string        | 任意形式文字: 可选参数描述, 例如:<ul><li>原因, 为什么此AGV类型需要可选参数‘direction’及其可以包含的值.</li><li>参数 ‘nodeMarker’ 必须只包含unsigned int值.</li><li>NURBS-Support 仅限于直线和圆形片段.</li>|
 | }            |               |                  |
@@ -1220,7 +1214,7 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | {            |               |                  |
 | &emsp;actionType   | string        | 唯一actionType 与action.actionType一致. |
 | &emsp;*actionDescription* | string  | 任意形式文字: action描述. |
-| &emsp;actionscopes | array of enum  | 使用此允许的范围列表action-type.<br/><br/>INSTANT: 可用作为立即.<br/>point: 可在点上使用.<br/>segment: 可在片段上使用.<br/><br/>例如: ```["INSTANT", "NODE"]```|
+| &emsp;actionscopes | array of enum  | 使用此允许的范围列表action-type.<br/><br/>INSTANT: 可用作为立即.<br/>node: 可在点上使用.<br/>edge: 可在片段上使用.<br/><br/>例如: ```["INSTANT", "NODE"]```|
 | &emsp;***actionParameters** [**actionParameter**]* | JSON-object数组 | 参数列表<br/>如果未定义,则该动作没有参数 |
 |&emsp;*{*     |               |                  |
 |&emsp;&emsp;key     | string        | Key-String for 参数. |
