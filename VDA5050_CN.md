@@ -57,7 +57,7 @@ Version 2.0
 [4 需求和协议定义](#Rapd)<br>
 [5 通信的过程和内容](#Pacoc)<br>
 [6 协议规范](#Ps)<br>
-[6.1 Symbols of the tables and meaning of formatting](#Sottamof)<br>
+[6.1 符号和格式的含义](#Sottamof)<br>
 [6.1.1 可选 字段](#Of)<br>
 [6.1.2 允许的字符和字段长度](#Pcafl)<br>
 [6.1.3 枚举的符号](#Noe) <br>
@@ -65,8 +65,8 @@ Version 2.0
 [6.2 MQTT连接处理,安全性和QoS](#MchsaQ)<br>
 [6.3 MQTT主题水平](#MTL)<br>
 [6.4 协议标头](#PH)<br>
-[6.5 通信Subtopics](#Sfc)<br>
-[6.6 主题: "task" (从 RCS 到 AGV)](#TOfmctA)<br>
+[6.5 通信主题](#Sfc)<br>
+[6.6 主题: "task" (任务)](#TOfmctA)<br>
 [6.6.1 概念和逻辑](#CaL)<br>
 [6.6.2 任务和任务更新](#Oaou)<br>
 [6.6.3 取消任务 (通过RCS)](#OCbMC)<br>
@@ -74,17 +74,17 @@ Version 2.0
 [6.6.3.2 当AGV没有任务时,接收到取消订单](#RacawAhno)<br>
 [6.6.4 任务拒绝](#Or)<br>
 [6.6.4.1 车辆得到了格式不正确的新任务](#Vgamno)<br>
-[6.6.4.2 车辆收到一个行动无法执行的任务 (例如 提起高度高于最大提升高度或没有安装举升设备的举升动作), 或与无法使用的字段 (例如 Trajectory)](#Vraowaicpeglhhtmlholaansii)<br>
-[6.6.4.3 车辆获得了一项相同orderid的新任务,但orderUpdateId比当前的低](#Vehiclegets)<br>
+[6.6.4.2 车辆收到一个行动无法执行的任务](#Vraowaicpeglhhtmlholaansii)<br>
+[6.6.4.3 车辆获得了相同orderid的新任务,orderUpdateId低](#Vehiclegets)<br>
 [6.6.5 Maps](#Maps)<br>
 [6.7 任务消息的实施](#Iotom)<br>
 [6.8 actions](#actions)<br>
-[6.8.1 预定义的动作,其参数,效果和范围](#Padtpeas)<br>
-[6.8.2 预定义的动作,其参数,效果和范围](#Padtpeas1)<br>
-[6.9 主题: "instantactions" (从 RCS 到 AGV)](#Tifmc)<br>
-[6.10 主题: "state" (从 AGV 到 RCS)](#TSfAtmc)<br>
+[6.8.1 预定义动作,其参数,效果和范围](#Padtpeas)<br>
+[6.8.2 预定义动作的定义和状态描述](#Padtpeas1)<br>
+[6.9 主题: "instantactions" (立即动作)](#Tifmc)<br>
+[6.10 主题: "state" (状态)](#TSfAtmc)<br>
 [6.10.1 概念和逻辑](#CaLe)<br>
-[6.10.2 途径点和进入/离开细片段,动作触发](#Tonaeletoa)<br>
+[6.10.2 途径点和进入/离开片段,动作触发](#Tonaeletoa)<br>
 [6.10.3 Base请求](#Br)<br>
 [6.10.4 信息Information](#Information)<br>
 [6.10.5 错误Errors](#Errors)<br>
@@ -102,7 +102,7 @@ Version 2.0
 
 
 
-# <a name="Foreword"></a> 1 Foreword 
+# <a name="Foreword"></a> 1 前言 
 
 
 该接口是 Verband der Automobilindustrie e. V. (German abbreviation VDA) 和 Verband Deutscher Maschinen-und Anlagenbau e. V. (German abbreviation VDMA)合作的.双方的目的是创建一个通用的接口. 更改接口的提议应提交给VDA与VDMA共同评估,并在做出积极决定的情况下被采用为新版本状态.非常感谢通过GitHub对本文档的贡献.可以在以下链接中找到: http://github.com/vda5050/vda5050.
@@ -244,7 +244,7 @@ AGV的功能是:
 
 
 
-## <a name="Sottamof"></a> 6.1 Symbols of the tables and meaning of formatting
+## <a name="Sottamof"></a> 6.1 表的符号和格式的含义
 
 该表包含标识符的名称,其单元,其数据类型以及描述(如果有).
 
@@ -338,7 +338,8 @@ topic | string | Topic (例如 任务或系统状态) 查看 Cap. 6.5
 Note: `/` 字符用于定义主题层次结构,不得在上述任何字段中使用它.
  `$` 字符在某些MQTT broker中也用于特殊的内部主题,因此也不应使用它.
 
-## <a name="PH"></a> 6.4 Protocol 头
+## <a name="PH"></a> 6.4 协议头
+`Protocol 头`
 
 每个JSON都包含协议header.在以下各节中,以下字段将被称为可读性的header. header包括以下元素. header不是JSON对象.
 
@@ -350,7 +351,7 @@ version | string | 	协议版本 [Major].[Minor].[Patch] (例如 1.3.2)
 manufacturer | string | AGV厂商
 serialNumber | string | AGV序列号 
 
-### Protocol version
+### 协议版本
 
 协议版本使用语义版本作用作为版本架构.
 
@@ -368,7 +369,8 @@ serialNumber | string | AGV序列号
 
 
 
-## <a name="Sfc"></a> 6.5 通信Subtopics
+## <a name="Sfc"></a> 6.5 通信主题
+`Subtopics`
 
 AGV协议使用以下主题进行RCS和AGV之间的信息交换
 
@@ -382,7 +384,8 @@ connection | Broker/AGV | RCS | 指示何时丢失AGV连接, 不是用来RCS检�
 factsheet | AGV | RCS | RCS中设置AGV属性 | mandatory | factsheet.schema
 
 
-## <a name="TOfmctA"></a> 6.6 Topic: "task"(从 RCS 到 AGV)
+## <a name="TOfmctA"></a> 6.6 MQTT 主题:任务
+`Topic: "task"(从 RCS 到 AGV)`
 
 主题“task”是MQTT主题,AGV接收JSON封装的任务. 
 
@@ -561,7 +564,8 @@ AGV必须报告“noOrderToCancel”错误,并将ErrorLevel设置为警告.insta
 3.必须报告警告,直到车辆接受新任务为止.
 
 
-#### <a name="Vraowaicpeglhhtmlholaansii"></a> 6.6.4.2 车辆收到一个行动无法执行的任务 (例如 提起高度高于最大提升高度或没有安装举升设备的举升动作), 或与无法使用的字段 (例如 Trajectory)
+#### <a name="Vraowaicpeglhhtmlholaansii"></a> 6.6.4.2 车辆收到一个行动无法执行的任务 
+(例如 提起高度高于最大提升高度或没有安装举升设备的举升动作), 或与无法使用的字段 (例如 Trajectory)
 
 解决方法： 
 
@@ -682,7 +686,8 @@ y |  | float64 | Y坐标在世界坐标系统中描述.actions
 } |  |  |
 
 
-## <a name="actions"></a> 6.8 actions
+## <a name="actions"></a> 6.8 AGV动作
+`actions`
 
 AGV如果支持驾驶以外的其他actions,则这些actions将通过附加到点或段的action字段执行,或通过单独的主题Instantaction发送(请参阅6.9).
 
@@ -697,9 +702,9 @@ AGV如果支持驾驶以外的其他actions,则这些actions将通过附加到�
 如果有明确定义的参数,参数必须被使用.
 额外的参数也可以被定义,以便成功执行action.
 
-如果无法将某些action映射到以下部分的actions之一,则AGV制造商可以定义RCS必须使用的其他actions.
+如果无法将某些action映射到以下actions中的一个,则AGV制造商必须定义RCS使用的其他actions.
 
-> 校准 2022年8月31日 09:22:02
+> 校准 2022年9月7日 08:46:25
 
 ### <a name="Padtpeas"></a> 6.8.1 预定义action 定义, 参数, 效果 和 范围
 
@@ -752,7 +757,8 @@ factsheetRequest | - | - | - | 资料单factsheet已经传递 | -
 
 
 
-## <a name="Tifmc"></a> 6.9 MQTT Topic: "instantActions" (从RCS to control to AGV)
+## <a name="Tifmc"></a> 6.9 MQTT 主题:立即动作
+`"instantActions" (从RCS to control to AGV)`
 
 在某些情况下,需要将actions发送到AGV,并且立即执行.通过将instantAction消息发布instantActions主题来实现.instantActions不得与AGV当前任务的内容相抵触(例如:instantAction降低货叉,而任务说要抬高货叉). 
 
@@ -775,7 +781,8 @@ Actions [action] | | array | 需要立即执行的动作组并且不是常规任
 当AGV收到一个立即动作,AGV状态(state)需要加入适合的actionStatus到actionStates;actionStatus依据动作的进度进行更新,查看图12,区分actionStatus的不同transitions;
 
 
-## <a name="TSfAtmc"></a> 6.10 MQTT Topic: "state" (从 AGV 到 RCS)
+## <a name="TSfAtmc"></a> 6.10 MQTT 主题:AGV状态
+` "state" (从 AGV 到 RCS)`
 
 AGV状态将仅在一个主题topic上传输.相比不同的消息 (例如, 针对 任务, 电池状态和错误码) 使用同一个topic将减少broker/RCS的工作量,同时还保持AGV状态的信息同步.AGV-State信号 和相关事件触发一起或者至少每30s 通过MQTT-Broker发布给RCS.
 
@@ -823,23 +830,23 @@ AGV上报途径点通过从`nodeStates`数组移除`nodeState`并且设置`lastN
 ### <a name="Br"></a> 6.10.3 基础请求Base request 
 
 If the AGV detects, that its base is running low, it can set the `newBaseRequest` flag to `true` to prevent unnecessary braking.
-如果AGV检测到,它的base运行过短,可以设置`newBaseRequest`标志为`true`避免不必要的刹车.
+如果AGV检测到,它的base路径运行过短,可以设置`newBaseRequest`标志为`true`避免不必要的刹车.
 
 
-### <a name="Information"></a> 6.10.4 Information 
+### <a name="Information"></a> 6.10.4 信息Information 
 
 
 AGV可以通过`information`数组提交任意的其他信息给RCS.它通过information消息传递,取决于AGV多久上报information;
 
-RCS逻辑上不能使用这心信息消息,只能用来可视化或者debug目的.
+RCS不能使用信息进行逻辑处理,只能用于可视化或者debug调试.
 
 
 
-### <a name="Errors"></a> 6.10.5 Errors 
+### <a name="Errors"></a> 6.10.5 错误 Errors 
 
 AGV通过`errors`数组上报错误码. 错误有两种级别`WARNING` 和 `FATAL`.`WARNING`是一个可以自动解除的错误,例如,防护入侵. `FATAL`错误需要人干预.错误可以传递说明,有助于通过errorReferences组查找错误的原因.
 
-### <a name="Implementation"></a> 6.10.6 Implementation(任务?)
+### <a name="Implementation"></a> 6.10.6 执行Implementation
 
 Object structure | Unit | Data type | Description 
 ---|---|---|---
@@ -893,8 +900,8 @@ Object structure | Unit | Data type | Description
 positionInitialized |  | boolean | "true”: 位置正在初始化.<br>"false”: 位置没有初始化.
 *localizationScore* |  | float64 | 范围: [0.0 ... 1.0]<br><br>描述定位的质量,以便可以使用, 例如 被SLAM-AGV描述, 当前位置信息的准确程度.<br><br>0.0: 位置未知<br>1.0: 已知位置<br><br>可选 对于车辆无法估计其定位质量的.<br><br>仅用于记录和可视化目的. 
 *deviationRange* | m | float64 | 用米定义的位置偏差范围.<br><br>可选 对于无法估计其偏差的车辆 例如 grid-based 定位.<br><br>仅用于记录和可视化目的.
-x | m | float64 | 地图上的X位置坐标 参考地图坐标系. <br>精度取决于特定的实现(任务?).
-y | m | float64 | 地图上的Y位置坐标 参考地图坐标系. <br>精度取决于特定的实现(任务?).
+x | m | float64 | 地图上的X位置坐标 参考地图坐标系. <br>精度取决于具体的执行.
+y | m | float64 | 地图上的Y位置坐标 参考地图坐标系. <br>精度取决于具体的执行.
 theta |  | float64 | 范围: [-Pi ... Pi]<br><br>AGV的方向(弧度?). 
 mapId |  | string | 地图位移标识id,用来定位的.<br><br>每个地图具有相同的原始坐标. <br>当AGV使用电梯时, 例如, 从一个楼层到另一个楼层,它将消失在离开楼层的地图出现在目标楼层电梯点.
 *mapDescription*<br>} |  | string | 地图上的其他信息. 
@@ -902,8 +909,8 @@ mapId |  | string | 地图位移标识id,用来定位的.<br><br>每个地图具
 Object structure | Unit | Data type | Description 
 ---|---|---|---
 **velocity** { |  | JSON-object |  
-*vx* | m/s | float64 | AVGS在其X方向上的速度.
-*vy* | m/s | float64 | AVGS沿其Y方向上的速度.
+*vx* | m/s | float64 | AVG在其X方向上的速度.
+*vy* | m/s | float64 | AVG在其Y方向上的速度.
 *omega*<br>}| Rad/s | float64 | AVG在其Z轴上转动速度.
 
 Object structure | Unit | Data type | Description 
@@ -985,7 +992,7 @@ Object structure | Unit | Data type | Description
 eStop |  | string | Enum {AUTOACK,MANUAL,REMOTE,NONE}<br><br>Acknowledge-Type of eStop:<br>AUTOACK: auto-acknowledgeable e-stop激活, 例如, 通过防撞条或安全防护区.<br>MANUAL: e-stop 将在车辆上手动承认.<br>REMOTE: facility e-stop has to be acknowledged remotely.<br>NONE: 无e-stop激活.
 fieldViolation<br><br>} |  | boolean | 防护区域侵犯.<br>"true":区域被侵犯<br>"false":区域没有被侵犯.
 
-#### Operating Mode Description
+#### 操作模式描述
 以下说明列出了"states"中的操作模式.
 
 Identifier | Description 
@@ -998,7 +1005,9 @@ TEACHIN | RCS不控制AGV. <br>管理者不会将驾驶任务或动作发送到A
 
 
 
-## <a name="actionStates"></a> 6.11 actionStates
+## <a name="actionStates"></a> 6.11 动作状态
+
+`actionStates`
 
 当AGV接收到`action` (不论是关联在`node`或者`edge`或者通过`instantaction`), 必须将`action`反馈在`actionstate` 在`actionStates`组里.
 
@@ -1024,7 +1033,8 @@ FAILED | 无论出于何种原因,都无法完成动作.
 
 
 
-## <a name="ABTas"></a> 6.12 动作阻塞类型和顺序Action Blocking Types and Sequence
+## <a name="ABTas"></a> 6.12 动作阻塞类型和顺序
+`Action Blocking Types and Sequence`
 
 包含多个动作的任务 在需要执行的动作列表中定义顺序. 
 动作的并行执行被它们的`blockingType`管理.
@@ -1046,15 +1056,17 @@ HARD | 不得与其他动作并行执行操作,不能在车辆行驶中执行.
 
 
 
-## <a name="TV"></a> 6.13 MQTT Topic "visualization" 
+## <a name="TV"></a> 6.13 MQTT 主题:可视化
+`Topic "visualization" `
 
-对于近乎实时的位置,AGV可以广播其位置和速度通过消息 `visualization`.
+对于近乎实时的位置,AGV可以广播其位置和速度通过主题 `visualization`.
 
-位置消息的结构 与状态中的位置和速度消息 结构相同,有关其他信息,请参见第6.7章实施,该消息主题的更新速率由集成商控制.
+位置消息的结构 与状态中的位置和速度主题 结构相同,有关其他主题,请参见第6.7章实施,该消息主题的更新速率由集成商控制.
 
 
 
-## <a name="Tc"></a> 6.14 MQTT Topic "connection"
+## <a name="Tc"></a> 6.14 MQTT 主题:连接
+`Topic "connection"`
 
 在将AGV客户端连接到broker时,可以设置最后一个will主题和消息,该主题和消息是由broker与AGV client断开连接后发布的. 
 因此,RCS可以通过订阅所有AGV的连接主题来检测断开事件. 
@@ -1097,7 +1109,8 @@ AGV上线:
 
 当AGV和broker之间的连接意外停止时, broker将发送最后一个will主题: "uagv/v2/manufacturer/SN/connection" 包含字段`connectionState`,且设置 `CONNECTIONBROKEN`.
 
-## <a name="Tf"></a> 6.16 MATT Topic "factsheet"
+## <a name="Tf"></a> 6.16 MATT 主题:资料单
+`Topic "factsheet"`
 
 FactSheet提供了有关特定AGV类型系列的基本信息.
 该信息允许比较不同的AGV类型,可以应用于AGV系统的规划,尺寸和仿真.FactSheet还包括有关将AGV类型系列集成到一个AGV VDA-5050-compliant RCS通信接口的信息.
@@ -1110,7 +1123,7 @@ RCS可以通过发送立即动作`factsheetRequest` 从AGV请求事实表.
 
 该主题上的所有消息均应带有保留标志.
 
-### 6.16.1 Factsheet JSON strcture
+### 6.16.1 资料单JSON结构
 The factsheet consists of the JSON-objects listed in the following table.
 
 | **Field**                  | **data type** | **description**                                              |
@@ -1295,12 +1308,12 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 | }                       |                      |                                                           |
 
 
-# <a name="Bp"></a> 7 Best practice
+# <a name="Bp"></a> 7 最佳实践
 
 本节包括其他信息,有助于促进与协议逻辑同时发生的共同理解.
 
 
-## <a name="Er"></a> 7.1 Error reference 
+## <a name="Er"></a> 7.1 错误参考
 
 如果由于erroneous任务而发生错误, AGV需要返回一个有含义的错误在errorReference字段 (参考 [6.10.6 Implementation](#errorReferenceImpl)).
 这可以包括以下信息:
@@ -1315,7 +1328,7 @@ If a parameter is not defined or set to zero then there is no explicit limit for
 
 
 
-## <a name="Fop"></a> 7.2 Format of parameters 
+## <a name="Fop"></a> 7.2 参数格式
 
 错误,信息,操作(errors, information, action)的参数被设计为带有键值对 的JSON-Objects数组.
 动作参数的"someaction”带有键值对 stationType和loadType的例子:
